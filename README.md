@@ -11,4 +11,3 @@ A simple digital application.​  Keeps track of user's health.​  User answers
 | Robert Lake              | Quality Assurance; Back-End       |
 | Zerin Shaima Meem        | Tech Support; Back-End            |
 
-Test edit - Dougherty
