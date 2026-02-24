@@ -10,3 +10,5 @@ A simple digital application.​  Keeps track of user's health.​  User answers
 | Mohammed Njie            | Software Developer; Full Stack    |
 | Robert Lake              | Quality Assurance; Back-End       |
 | Zerin Shaima Meem        | Tech Support; Back-End            |
+
+Test edit - Dougherty
