@@ -11,3 +11,10 @@ A simple digital application.​  Keeps track of user's health.​  User answers
 | Robert Lake              | Quality Assurance; Back-End       |
 | Zerin Shaima Meem        | Tech Support; Back-End            |
 
+React Documentation:
+https://react.dev/learn/installation
+https://react.dev/learn/creating-a-react-app#:~:text=js%20(App%20Router)-,Next.js%E2%80%99s%20App%20Router,-is%20a%20React
+
+Using basic react template using next.js to create UI
+
+`npx create-next-app@latest`
