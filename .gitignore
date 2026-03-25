@@ -1,0 +1,62 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Vite / build output
+dist/
+build/
+out/
+
+# IDE/editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.code-workspace
+
+# OS-generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# npm pkg state
+.pnp.*
+.cache/
+
+# Misc
+coverage/
+report/
+*.tgz
+*.zip
+
+# Optional (if using .history plugins/backups)
+.history/
+
+# If you generate SSL certs/stores locally
+*.pem
+*.key
+*.csr
