@@ -1,5 +1,6 @@
 import React from "react";
 import SignupForm  from "../features/authentication/components/SignupForm"; 
+import { UserAuth } from "../features/authentication/components/AuthContext";
 
 const Signup = () => {
     return (
