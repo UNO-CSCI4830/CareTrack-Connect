@@ -8,6 +8,8 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
     const [session, setSession] = useState(undefined);
 
+    
+    
     //sign up
     const signUpNewUser = async (email, password) => {
         const {data, error} = await supabase.auth.signUp({
@@ -17,10 +19,24 @@ export const AuthContextProvider = ({ children }) => {
 
         if(error){
             console.error("Error signing up:", error);
-            return {success: false, error}
+            return {success: false, error};
         }
         return {success: true, data};
     };
+    
+    //sign in
+    const loginUser = async (email, password) => {
+        const {data, error} = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+        if(error){
+            console.error("Error logging in:", error);
+            return {success: false, error};
+        }
+        return {success: true, data};
+    }
+    
     
     useEffect(() =>{
         supabase.auth.getSession().then(({data: {session}}) => {
@@ -34,7 +50,7 @@ export const AuthContextProvider = ({ children }) => {
     
 
     return (
-        <AuthContext.Provider value={{session, signUpNewUser }}>
+        <AuthContext.Provider value={{session, signUpNewUser, loginUser }}>
             {children}
         </AuthContext.Provider>
     );

@@ -13,6 +13,7 @@ function App() {
       <section id="center">
        <h1>Hello Care</h1>
        <Link to="/signup">Sign up here</Link>
+       <Link to="/login">Log in here</Link>
       </section>
 
     </>
