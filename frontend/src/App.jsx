@@ -15,7 +15,7 @@ function App() {
        <h1>Hello Care</h1>
        <Link to="signup">Sign up here</Link>
        <Link to="doctorView"> Doctor's View Demo</Link>
-       <Link to="PatientView"> Patients's View Demo</Link>
+       <Link to="patientView"> Patients's View Demo</Link>
       </section>
 
     </>
