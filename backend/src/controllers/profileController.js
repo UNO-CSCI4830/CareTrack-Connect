@@ -53,13 +53,13 @@ export class ProfileController {
 
   static async createProfile(req, res, next) {
     try {
-      const profileData = req.body;
-      
-      if (!profileData.auth_user_id || !profileData.role || !profileData.first_name || !profileData.last_name || !profileData.email) {
-        return httpResponse.badRequest(res, "Missing required fields: auth_user_id, role, first_name, last_name, email");
+      const { first_name, last_name, email, password, role } = req.body;
+
+      if (!first_name || !last_name || !email || !password || !role) {
+        return httpResponse.badRequest(res, "Missing required fields: first_name, last_name, email, password, role");
       }
 
-      const newProfile = await ProfileService.createProfile(profileData);
+      const newProfile = await ProfileService.createProfile({ first_name, last_name, email, password, role });
       httpResponse.created(res, newProfile, "Profile created successfully");
     } catch (error) {
       next(error);
