@@ -11,10 +11,15 @@ export const AuthContextProvider = ({ children }) => {
     
     
     //sign up
-    const signUpNewUser = async (email, password) => {
+    const signUpNewUser = async (email, password, roleType) => {
         const {data, error} = await supabase.auth.signUp({
             email: email,
             password: password,
+            options: {
+                data:{
+                    role: roleType
+                }
+            },
         });
 
         if(error){
@@ -36,6 +41,16 @@ export const AuthContextProvider = ({ children }) => {
         }
         return {success: true, data};
     }
+
+    //sign out
+    const logoutUser = async () => {
+        const {error} = await supabase.auth.signOut();
+        if (error){
+            console.error("Error logging out: ", error);
+            return {success: false, error};
+        }
+        return {success: true, data,};
+    }
     
     
     useEffect(() =>{
@@ -50,7 +65,7 @@ export const AuthContextProvider = ({ children }) => {
     
 
     return (
-        <AuthContext.Provider value={{session, signUpNewUser, loginUser }}>
+        <AuthContext.Provider value={{session, signUpNewUser, loginUser, logoutUser}}>
             {children}
         </AuthContext.Provider>
     );

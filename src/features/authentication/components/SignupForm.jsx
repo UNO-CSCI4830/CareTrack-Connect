@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { UserAuth } from "./AuthContext";
 
 const SignupForm = () => {
@@ -8,15 +8,17 @@ const SignupForm = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState("");
     const {session, signUpNewUser } = UserAuth();
+    const { role } = useParams();
+
     const navigate = useNavigate()
     
     const handleSignUp = async (e) => { 
         e.preventDefault();
         setLoading(true);
         try{
-            const result = await signUpNewUser(email, password);
+            const result = await signUpNewUser(email, password, role);
             if (result.success){
-                navigate("/");
+                navigate("/logoutTest");
             }
         } catch (err){
             setError("an Error Occurred" + err);
