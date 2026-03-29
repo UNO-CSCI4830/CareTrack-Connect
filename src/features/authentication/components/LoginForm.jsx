@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { UserAuth } from "./AuthContext";
 
-const SignupForm = () => {
+const LoginForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState("");
-    const {session, signUpNewUser } = UserAuth();
+    const {session, loginUser } = UserAuth();
     const navigate = useNavigate()
     
-    const handleSignUp = async (e) => { 
+    const handleLogin = async (e) => { 
         e.preventDefault();
         setLoading(true);
         try{
-            const result = await signUpNewUser(email, password);
+            const result = await loginUser(email, password);
             if (result.success){
                 navigate("/");
             }
@@ -27,10 +27,10 @@ const SignupForm = () => {
 
     return (
         <>
-            <form onSubmit={handleSignUp}>
+            <form onSubmit={handleLogin}>
                 <input onChange={(e) => setEmail(e.target.value)} type="email" placeholder='Email' /><br />
                 <input onChange={(e) => setPassword(e.target.value)} type="password" placeholder='Password' /> <br />
-                <button type="submit" disabled={loading}>Sign up</button> <br />
+                <button type="submit" disabled={loading}>Log in</button> <br />
             </form>
             <Link to="/">Back to start</Link>
             {error && <p>{error}</p>}
@@ -38,4 +38,4 @@ const SignupForm = () => {
     );
 };
 
-export default SignupForm;
+export default LoginForm;
