@@ -5,6 +5,9 @@ import Login from "../pages/Login";
 import DoctorView from "../pages/DoctorLandingView";
 import PatientView from "../pages/PatientLandingView";
 
+import WeeklyReportView from "../pages/WeeklyReportView";
+import HistoryView from "../pages/HistoryView";
+
 export const router = createBrowserRouter([
     {path: "/", element: <App />},
     {path: "/signup", element: <Signup />},

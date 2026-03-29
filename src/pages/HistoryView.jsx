@@ -1,16 +1,15 @@
-import React from "react";
 import NavigationDrawer from "../components/NavigationDrawer";
 
-const DoctorView = () => {
+const HistoryView = () => {
     return (
         <>
             <NavigationDrawer />
             <section id="center">
-                <h1>Hello Doctor View</h1>
+                <h1>Hello History View</h1>
                 
             </section>
         </>
     );
 };
 
-export default DoctorView
+export default HistoryView
