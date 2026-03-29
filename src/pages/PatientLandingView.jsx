@@ -1,9 +1,9 @@
-import NavigationBar from "../components/navigationBar";
+import NavigationDrawer from "../components/NavigationDrawer";
 
 const PatientView = () => {
     return (
         <>
-            <NavigationBar />
+            <NavigationDrawer />
             <section id="center">
                 <h1>Hello Patient View</h1>
                 
