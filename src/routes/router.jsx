@@ -7,6 +7,7 @@ import PatientView from "../pages/PatientLandingView";
 
 import WeeklyReportView from "../pages/WeeklyReportView";
 import HistoryView from "../pages/HistoryView";
+import CheckInView from "../pages/CheckinView";
 
 export const router = createBrowserRouter([
     {path: "/", element: <App />},
@@ -16,5 +17,6 @@ export const router = createBrowserRouter([
     {path: "/patient", element: <PatientView />},
     {path: "/weekly-report", element: <WeeklyReportView />},
     {path: "/history", element: <HistoryView />},
+    {path: "/check-in", element: <CheckInView />},
 
 ]);
