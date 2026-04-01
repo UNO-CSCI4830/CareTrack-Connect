@@ -1,0 +1,20 @@
+
+
+.navbar {
+    background-color: #a5a4a4;
+
+}
+
+.navbarBrand{
+    background-color: #a5a4a4;
+}   
+.navLinks {
+    color: black;
+    gap: 1rem;
+    list-style-type: none; /* Removes bullet points */
+    margin: 0;             /* Resets default browser margin */
+    padding: 10px;            /* Resets default browser padding */
+    background-color: #a5a4a4; /* Adds a background color to the navbar */
+    overflow: hidden;
+    display: flex;
+}
