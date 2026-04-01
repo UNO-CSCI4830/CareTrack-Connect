@@ -21,16 +21,16 @@ export class PatientService {
     return data;
   }
 
-  static async createPatient(patientData) {
-    const { data, error } = await supabase
-      .from("patients")
-      .insert([patientData])
-      .select()
-      .single();
+//   static async createPatient(patientData) {
+//     const { data, error } = await supabase
+//       .from("patients")
+//       .insert([patientData])
+//       .select()
+//       .single();
     
-    if (error) throw error;
-    return data;
-  }
+//     if (error) throw error;
+//     return data;
+//   }
 
   static async updatePatient(id, patientData) {
     const { data, error } = await supabase

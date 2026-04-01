@@ -1,4 +1,5 @@
 import { supabase } from "../supabaseClient.js";
+import { ProfileService } from "./profileService.js";
 
 export class PatientDetailsService {
   static async getAllPatientDetails() {
@@ -32,16 +33,16 @@ export class PatientDetailsService {
     return data;
   }
 
-  static async createPatientDetails(detailsData) {
-    const { data, error } = await supabase
-      .from("patient_details")
-      .insert([detailsData])
-      .select()
-      .single();
+  // static async createPatientDetails(detailsData) {
+  //   const { data, error } = await supabase
+  //     .from("patient_details")
+  //     .insert([detailsData])
+  //     .select()
+  //     .single();
     
-    if (error) throw error;
-    return data;
-  }
+  //   if (error) throw error;
+  //   return data;
+  // }
 
   static async updatePatientDetails(id, detailsData) {
     const { data, error } = await supabase
@@ -64,6 +65,7 @@ export class PatientDetailsService {
       .single();
     
     if (error) throw error;
+    await ProfileService.deleteProfile(data.profile_id);
     return data;
   }
 }
