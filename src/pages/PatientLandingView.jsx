@@ -1,4 +1,5 @@
-import NavigationBar from "../components/navigationBar";
+import NavigationBar from "../components/NavigationBar";
+import { LogoutButton } from "../features/authentication/components/LogoutButton";
 
 const PatientView = () => {
     return (
@@ -6,7 +7,6 @@ const PatientView = () => {
             <NavigationBar />
             <section id="center">
                 <h1>Hello Patient View</h1>
-                
             </section>
         </>
     );
