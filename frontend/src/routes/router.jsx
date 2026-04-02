@@ -4,6 +4,7 @@ import Signup from "../pages/Signup";
 import Login from "../pages/Login";
 import DoctorView from "../pages/DoctorLandingView";
 import PatientView from "../pages/PatientLandingView";
+import PatientProfileView from "../pages/PatientProfileView";
 
 import WeeklyReportView from "../pages/WeeklyReportView";
 import HistoryView from "../pages/HistoryView";
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
     {path: "/login", element: <Login />},
     {path: "/doctor", element: <DoctorView />},
     {path: "/patient", element: <PatientView />},
+    {path: "/patient-profile", element: <PatientProfileView />},
     {path: "/weekly-report", element: <WeeklyReportView />},
     {path: "/history", element: <HistoryView />},
     {path: "/check-in", element: <CheckInView />},

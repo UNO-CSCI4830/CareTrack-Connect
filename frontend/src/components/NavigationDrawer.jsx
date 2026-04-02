@@ -7,12 +7,13 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Avatar from '@mui/material/Avatar';
 
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HelpIcon from '@mui/icons-material/Help';
 
-import {Link, NavLink, useLocation} from 'react-router-dom'
+import {Link, NavLink, useLocation, useNavigate} from 'react-router-dom'
 
 
 import AppBar from '@mui/material/AppBar';
@@ -22,11 +23,16 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 export default function NavigationDrawer() {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
+  };
+
+  const handleProfileClick = () => {
+    navigate('/patient-profile');
   };
 
   const IconList = [
@@ -107,7 +113,7 @@ export default function NavigationDrawer() {
                 <MenuIcon />
             </IconButton>
 
-            <Box direction={"row"} sx={{ display: 'flex', textAlign: 'center' }}>
+            <Box direction={"row"} sx={{ display: 'flex', textAlign: 'center', flex: 1 }}>
 
               {NavigationPageList.map((item) => (
                 //Figure this out
@@ -119,6 +125,27 @@ export default function NavigationDrawer() {
               }
 
             </Box>
+
+            <IconButton
+                onClick={handleProfileClick}
+                size="large"
+                edge="end"
+                sx={{ ml: 'auto' }}
+            >
+              <Avatar
+                sx={{
+                  width: 40,
+                  height: 40,
+                  backgroundColor: '#863bff',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  fontWeight: 'bold',
+                  color: 'white'
+                }}
+              >
+                P
+              </Avatar>
+            </IconButton>
             </Toolbar>
         </AppBar>
         </Box>
