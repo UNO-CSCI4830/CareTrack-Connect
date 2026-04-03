@@ -1,5 +1,6 @@
 import React from "react";
 import {Link, NavLink} from 'react-router-dom'
+import { LogoutButton } from "./auth/logoutButton";
 
 
 import styles from "../styles/navigationBar.module.css" // Optional: for styling
@@ -8,7 +9,7 @@ const NavigationBar = () =>{
     return(
         <nav className={styles.navbar}>
             <div className={styles.navbarBrand}>
-                <Link to="/">Logout</Link>
+                <LogoutButton />
             </div>
             <ul className={styles.navLinks}>
                 <li>

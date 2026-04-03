@@ -1,4 +1,7 @@
-import SignupForm  from "../components/auth/SignupForm"; 
+import React from "react";
+import SignupForm from "../components/auth/SignupForm";
+import { UserAuth } from "../components/auth/AuthContext";
+
 const Signup = () => {
     return (
         <section id="center">
