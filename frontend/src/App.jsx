@@ -1,13 +1,7 @@
 import './App.css';
 import { Link } from 'react-router-dom';
 
-
-//routing imports
-function App() {
-  
-  return (
-    <>
-      <section id="center">
+/*
        <h1>Hello Care</h1>
         <Link to="/signup">Sign up here</Link>
         <Link to="/login">Log in here</Link>
@@ -15,8 +9,22 @@ function App() {
         <Link to="/patient"> Patients's View Demo</Link>
         <Link to="/signup/patient">Sign up here (patient) </Link>
         <Link to="/signup/doctor">Sign up here (doctor)</Link>
-      </section>
+        */
 
+//routing imports
+function App() {
+  
+  return (
+    <>
+    <div id="center">
+    <h1>CareTrack Connect</h1>
+        <Link to="/signup">Sign up here</Link>
+        <Link to="/login">Log in here</Link>
+        <Link to="/doctor"> Doctor's View Demo</Link>
+        <Link to="/patient"> Patients's View Demo</Link>
+        <Link to="/signup/patient">Sign up here (patient) </Link>
+        <Link to="/signup/doctor">Sign up here (doctor)</Link>
+    </div>
     </>
   )
 }
