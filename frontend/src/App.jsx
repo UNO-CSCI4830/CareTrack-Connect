@@ -16,7 +16,7 @@ function App() {
   
   return (
     <>
-    <div id="center">
+    <div id="center" className="card">
     <h1>CareTrack Connect</h1>
         <Link to="/signup">Sign up here</Link>
         <Link to="/login">Log in here</Link>
