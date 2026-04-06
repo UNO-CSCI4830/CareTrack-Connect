@@ -284,7 +284,11 @@ const PatientProfileView = () => {
                                 // View Mode - Display all fields read-only
                                 <>
                                     {/* Basic Information Section */}
-                                    <Typography variant="h6" sx={{ marginBottom: '1rem', fontWeight: 'bold', color: '#863bff' }}>
+                                    <Typography
+                                        variant="h6"
+                                        className="profile-section-title"
+                                        sx={{ marginBottom: '1rem' }}
+                                        >
                                         Basic Information
                                     </Typography>
                                     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
