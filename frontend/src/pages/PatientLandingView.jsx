@@ -29,7 +29,7 @@ const PatientView = () => {
                     <Typography variant="h4" >Welcome to CareTrack-Connect </Typography>
                     <Typography variant="h6" >Check your status below and complete your check-in!</Typography>
                 </Box>
-                <Box sx={{border: 2, borderRadius: '16px', margin: '1rem', paddingTop: '1rem'}}>
+                <Box className="status-card">
                     <Typography variant="h3" >Status Card </Typography>
                     <Typography variant="h4" >Today's Check-in: {isFinished ? 'Complete' : 'Not Started'} </Typography>
                     <Button onClick={handleClick}sx={{border: 1, borderRadius: '30px', display: 'inline-block', paddingLeft:'1rem',paddingRight:'1rem', marginBottom:'.5rem', marginTop:'.5rem'}}>
