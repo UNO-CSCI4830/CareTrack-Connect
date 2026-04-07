@@ -237,3 +237,15 @@ button {
 .dashboard-action-btn:hover {
   background: #4f46e5 !important;
 }
+.dashboard-header {
+  background: yellow !important;
+}
+
+.status-card {
+  background: red !important;
+  border: 5px solid blue !important;
+}
+
+.dashboard-action-btn {
+  background: green !important;
+}
