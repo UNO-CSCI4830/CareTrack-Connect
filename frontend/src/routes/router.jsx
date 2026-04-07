@@ -14,7 +14,6 @@ import LogoutTest from "../pages/logoutTest";
 export const router = createBrowserRouter([
     {path: "/", element: <App />},
     {path: "/signup", element: <Signup />},
-    
     {path: "/login", element: <Login />},
     {path: "/doctor", element: <DoctorView />},
     {path: "/patient", element: <PatientView />},
@@ -23,7 +22,4 @@ export const router = createBrowserRouter([
     {path: "/history", element: <HistoryView />},
     {path: "/check-in", element: <CheckInView />},
     {path: "/logoutTest", element:<LogoutTest />}, 
-
-
 ]);
-
