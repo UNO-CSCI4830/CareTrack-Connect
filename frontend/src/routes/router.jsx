@@ -13,7 +13,8 @@ import LogoutTest from "../pages/logoutTest";
 
 export const router = createBrowserRouter([
     {path: "/", element: <App />},
-    {path: "/signup/:role", element: <Signup />},
+    {path: "/signup", element: <Signup />},
+    
     {path: "/login", element: <Login />},
     {path: "/doctor", element: <DoctorView />},
     {path: "/patient", element: <PatientView />},
