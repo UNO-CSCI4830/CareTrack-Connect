@@ -53,13 +53,24 @@ const PatientView = () => {
                         {isFinished ? 'Complete' : 'Not Started'}
                     </Typography>
 
-                    <Button
-                        variant="contained"
-                        onClick={handleClick}
-                        className="dashboard-action-btn"
-                    >
-                        {isFinished ? 'Edit Check-In' : 'Start Check-In'}
-                    </Button>
+                  <Button
+                      variant="contained"
+                      onClick={handleClick}
+                      className="dashboard-action-btn"
+                      sx={{
+                          backgroundColor: "#6366f1",
+                          color: "white",
+                          fontWeight: 600,
+                          borderRadius: "12px",
+                          padding: "12px 20px",
+                          boxShadow: "none",
+                          "&:hover": {
+                              backgroundColor: "#4f46e5"
+                          }
+                      }}
+                      >
+                      {isFinished ? 'Edit Check-In' : 'Start Check-In'}
+                  </Button>
                 </Box>
             </section>
         </>
