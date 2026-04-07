@@ -54,7 +54,6 @@ const PatientView = () => {
                     </Typography>
 
                   <Button
-                      variant="contained"
                       onClick={handleClick}
                       className="dashboard-action-btn"
                       sx={{
@@ -62,10 +61,12 @@ const PatientView = () => {
                           color: "white",
                           fontWeight: 600,
                           borderRadius: "12px",
-                          padding: "12px 20px",
+                          padding: "12px 24px",
+                          textTransform: "none",
                           boxShadow: "none",
                           "&:hover": {
-                              backgroundColor: "#4f46e5"
+                              backgroundColor: "#4f46e5",
+                              boxShadow: "0 8px 18px rgba(99, 102, 241, 0.25)"
                           }
                       }}
                       >
