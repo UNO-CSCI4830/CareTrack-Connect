@@ -69,17 +69,13 @@ body {
 
 /* ===== STATUS CARD ===== */
 .status-card {
-  background: white;
-  border-radius: 14px;
-  padding: 20px;
-  margin-top: 20px;
-
-  border: 1px solid #e2e8f0;
-  transition: 0.2s;
-}
-
-.status-card:hover {
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  background: white !important;
+  border-radius: 20px !important;
+  padding: 30px !important;
+  margin: 1rem !important;
+  border: none !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+  max-width: 650px;
 }
 
 /* ===== SECTION HEADINGS ===== */
