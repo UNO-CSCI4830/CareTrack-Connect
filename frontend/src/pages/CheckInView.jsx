@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import NavigationDrawer from "../components/NavigationDrawer";
 import Question from "../components/Question";
+import { UserAuth } from "../components/auth/AuthContext";
+import CheckInService from "../services/checkInService";
+
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -11,17 +14,27 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Paper from "@mui/material/Paper";
-import { UserAuth } from "../components/auth/AuthContext";
-import CheckInService from "../services/checkInService";
+
+const stepLabels = ["Part 1", "Part 2", "Part 3"];
 
 const buildOptions = (q) => {
   const options = [];
+
   for (let i = q.scale_min; i <= q.scale_max; i++) {
     let label = String(i);
-    if (i === q.scale_min && q.scale_min_label) label = `${i} – ${q.scale_min_label}`;
-    else if (i === q.scale_max && q.scale_max_label) label = `${i} – ${q.scale_max_label}`;
-    options.push({ value: i, label });
+
+    if (i === q.scale_min && q.scale_min_label) {
+      label = `${i} – ${q.scale_min_label}`;
+    } else if (i === q.scale_max && q.scale_max_label) {
+      label = `${i} – ${q.scale_max_label}`;
+    }
+
+    options.push({
+      value: i,
+      label,
+    });
   }
+
   return options;
 };
 
@@ -31,16 +44,16 @@ const paginateQuestions = (questions) => [
   questions.slice(7, 11),
 ];
 
-const stepLabels = ["Part 1", "Part 2", "Part 3"];
-
 const CheckInView = () => {
   const { session } = UserAuth();
+
   const [questions, setQuestions] = useState([]);
   const [pages, setPages] = useState([[], [], []]);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -48,41 +61,69 @@ const CheckInView = () => {
   });
 
   useEffect(() => {
-    CheckInService.getActiveQuestions()
-      .then((data) => {
-        const qs = data.data ?? data;
-        setQuestions(qs);
-        setPages(paginateQuestions(qs));
-      })
-      .catch((err) => {
-        console.error(err);
+    const loadQuestions = async () => {
+      try {
+        const data = await CheckInService.getActiveQuestions();
+        const questionList = data.data ?? data;
+
+        setQuestions(questionList);
+        setPages(paginateQuestions(questionList));
+      } catch (error) {
+        console.error(error);
         setSnackbar({
           open: true,
           message: "Failed to load questions.",
           severity: "error",
         });
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadQuestions();
   }, []);
 
   const handleAnswer = (questionId, value) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
   };
 
-  const currentPageQuestions = pages[currentPage] ?? [];
+  const currentQuestions = pages[currentPage] ?? [];
 
-  const isAnswered = (q) => answers[q.id] !== undefined && answers[q.id] !== "";
-  const isCurrentPageComplete = currentPageQuestions.every(isAnswered);
-  const isAllComplete = questions.length > 0 && questions.every(isAnswered);
+  const isAnswered = (q) =>
+    answers[q.id] !== undefined && answers[q.id] !== "";
+
+  const isCurrentPageComplete = currentQuestions.every(isAnswered);
+  const isAllComplete =
+    questions.length > 0 && questions.every(isAnswered);
+
+  const handleBack = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < pages.length - 1) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
 
   const handleSave = () => {
-    setSnackbar({ open: true, message: "Progress saved!", severity: "info" });
+    setSnackbar({
+      open: true,
+      message: "Progress saved!",
+      severity: "info",
+    });
   };
 
   const handleSubmit = async () => {
     if (!isAllComplete) return;
 
     const patientId = session?.user?.id;
+
     if (!patientId) {
       setSnackbar({
         open: true,
@@ -93,6 +134,7 @@ const CheckInView = () => {
     }
 
     setSubmitting(true);
+
     try {
       const checkIn = await CheckInService.createCheckIn(patientId);
       const checkInId = checkIn.data?.id ?? checkIn.id;
@@ -103,29 +145,22 @@ const CheckInView = () => {
       }));
 
       await CheckInService.submitResponses(checkInId, responses);
+
       setSnackbar({
         open: true,
         message: "Check-in submitted successfully!",
         severity: "success",
       });
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       setSnackbar({
         open: true,
-        message: err.message || "Submission failed.",
+        message: error.message || "Submission failed.",
         severity: "error",
       });
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const handleNext = () => {
-    if (currentPage < pages.length - 1) setCurrentPage((p) => p + 1);
-  };
-
-  const handleBack = () => {
-    if (currentPage > 0) setCurrentPage((p) => p - 1);
   };
 
   if (loading) {
@@ -134,10 +169,10 @@ const CheckInView = () => {
         <NavigationDrawer />
         <Box
           sx={{
+            minHeight: "60vh",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "60vh",
           }}
         >
           <CircularProgress sx={{ color: "#6366f1" }} />
@@ -157,15 +192,20 @@ const CheckInView = () => {
           padding: "2rem",
         }}
       >
-        <Box sx={{ marginBottom: "1.5rem" }}>
+        <Box sx={{ marginBottom: "1.5rem", textAlign: "center" }}>
           <Typography
             variant="h4"
-            sx={{ fontWeight: 700, color: "#1e293b", marginBottom: "0.4rem" }}
+            sx={{
+              fontWeight: 700,
+              color: "#1e293b",
+              marginBottom: "0.4rem",
+            }}
           >
             Daily Check-In
           </Typography>
+
           <Typography sx={{ color: "#64748b" }}>
-            Complete each section to submit today’s check-in.
+            Complete each section before submitting today’s check-in.
           </Typography>
         </Box>
 
@@ -182,7 +222,11 @@ const CheckInView = () => {
             activeStep={currentPage}
             alternativeLabel
             sx={{
-              marginBottom: "2rem",
+              maxWidth: "550px",
+              margin: "0 auto 2rem",
+              "& .MuiStepLabel-label": {
+                marginTop: "0.4rem",
+              },
               "& .MuiStepLabel-label.Mui-active": {
                 color: "#6366f1",
                 fontWeight: 700,
@@ -206,16 +250,27 @@ const CheckInView = () => {
             ))}
           </Stepper>
 
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {currentPageQuestions.map((q) => (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem",
+            }}
+          >
+            {currentQuestions.map((q) => (
               <Paper
                 key={q.id}
                 elevation={0}
                 sx={{
-                  padding: "1rem",
+                  padding: "1.5rem",
                   borderRadius: "16px",
                   border: "1px solid #e2e8f0",
                   backgroundColor: "#f8fafc",
+                  transition: "0.2s ease",
+                  "&:hover": {
+                    backgroundColor: "#ffffff",
+                    borderColor: "#c7d2fe",
+                  },
                 }}
               >
                 <Question
@@ -223,7 +278,7 @@ const CheckInView = () => {
                   options={q.question_type === "scale" ? buildOptions(q) : []}
                   freeText={q.question_type === "free_text"}
                   value={answers[q.id] ?? ""}
-                  onChange={(val) => handleAnswer(q.id, val)}
+                  onChange={(value) => handleAnswer(q.id, value)}
                 />
               </Paper>
             ))}
@@ -231,12 +286,12 @@ const CheckInView = () => {
 
           <Box
             sx={{
+              marginTop: "2rem",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               flexWrap: "wrap",
               gap: "0.75rem",
-              marginTop: "2rem",
             }}
           >
             <Button
@@ -273,6 +328,7 @@ const CheckInView = () => {
                 sx={{
                   backgroundColor: "#6366f1",
                   borderRadius: "12px",
+                  padding: "12px 28px",
                   textTransform: "none",
                   boxShadow: "none",
                   "&:hover": {
@@ -291,6 +347,7 @@ const CheckInView = () => {
                 sx={{
                   backgroundColor: "#6366f1",
                   borderRadius: "12px",
+                  padding: "12px 28px",
                   textTransform: "none",
                   boxShadow: "none",
                   "&:hover": {
@@ -299,7 +356,11 @@ const CheckInView = () => {
                   },
                 }}
               >
-                {submitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
+                {submitting ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  "Submit"
+                )}
               </Button>
             )}
           </Box>
@@ -322,12 +383,22 @@ const CheckInView = () => {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
-        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+        onClose={() =>
+          setSnackbar((prev) => ({
+            ...prev,
+            open: false,
+          }))
+        }
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           severity={snackbar.severity}
-          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          onClose={() =>
+            setSnackbar((prev) => ({
+              ...prev,
+              open: false,
+            }))
+          }
         >
           {snackbar.message}
         </Alert>
