@@ -54,6 +54,7 @@ const PatientView = () => {
                     </Typography>
 
                   <Button
+                      variant="contained"
                       onClick={handleClick}
                       className="dashboard-action-btn"
                       sx={{
