@@ -8,17 +8,23 @@ import TextField from '@mui/material/TextField';
 
 export default function Question({ question, options = [], value, onChange, freeText = false }) {
     return (
-        <Box sx={{
-            border: '1px solid #e5e4e7',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            backgroundColor: '#fff',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-        }}>
+        <Box
+            sx={{
+                border: '1px solid #e5e4e7',
+                borderRadius: '12px',
+                padding: '1.5rem',
+                backgroundColor: '#fff',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+            }}
+        >
             <FormControl fullWidth>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, marginBottom: '0.75rem' }}>
+                <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: 600, marginBottom: '0.75rem' }}
+                >
                     {question}
                 </Typography>
+
                 {freeText ? (
                     <TextField
                         multiline
@@ -29,22 +35,32 @@ export default function Question({ question, options = [], value, onChange, free
                         size="small"
                     />
                 ) : (
-                    <RadioGroup row value={value} onChange={(e) => onChange(e.target.value)}>
+                    <RadioGroup
+                        row
+                        value={String(value ?? '')}
+                        onChange={(e) => onChange(e.target.value)}
+                    >
                         {options.map((option) => (
                             <FormControlLabel
                                 key={option.value}
                                 value={String(option.value)}
-                                control={
-                                  <Radio
-                                    sx={{
-                                      color: "#cbd5e1",
-                                      "&.Mui-checked": {
-                                        color: "#6366f1",
-                                      },
-                                    }}
-                                  />
-                                }
                                 label={option.label}
+                                sx={{
+                                    marginRight: '1rem',
+                                    '& .MuiFormControlLabel-label': {
+                                        color: '#1e293b',
+                                    },
+                                }}
+                                control={
+                                    <Radio
+                                        color="secondary"
+                                        sx={{
+                                            '&.Mui-checked': {
+                                                color: '#6366f1',
+                                            },
+                                        }}
+                                    />
+                                }
                             />
                         ))}
                     </RadioGroup>
