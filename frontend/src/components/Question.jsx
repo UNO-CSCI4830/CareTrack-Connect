@@ -34,7 +34,16 @@ export default function Question({ question, options = [], value, onChange, free
                             <FormControlLabel
                                 key={option.value}
                                 value={String(option.value)}
-                                control={<Radio />}
+                                control={
+                                  <Radio
+                                    sx={{
+                                      color: "#cbd5e1",
+                                      "&.Mui-checked": {
+                                        color: "#6366f1",
+                                      },
+                                    }}
+                                  />
+                                }
                                 label={option.label}
                             />
                         ))}
