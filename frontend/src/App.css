@@ -34,9 +34,11 @@ body {
 /* ===== CARD STYLE ===== */
 .card {
   background: white;
-  padding: 30px;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 520px;
 }
 
 /* ===== LINKS AS BUTTONS ===== */
