@@ -6,43 +6,64 @@ import Divider from '@mui/material/Divider';
 import { useNavigate } from 'react-router-dom';
 
 const currentDate = new Date();
-const formattedDate = currentDate.toLocaleDateString(); // or `${currentDate.getMonth() + 1} ${currentDate.getDate()} ${currentDate.getFullYear()}'
-const isFinished = false; //This should check if today's checkin has been completed
-
+const formattedDate = currentDate.toLocaleDateString();
+const isFinished = false;
 
 const PatientView = () => {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate('/check-in')
-    }
+        navigate('/check-in');
+    };
+
     return (
         <>
             <NavigationDrawer />
             <section id="top">
-                <Box sx={{display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'start', paddingTop: '3em', paddingLeft:'3em'}}>
-                    <Typography variant="h4" >Hello Patient </Typography>
-                    <Typography variant="h6" >Today is {formattedDate} </Typography>
+                <Box className="dashboard-header">
+                    <Typography variant="h4" className="dashboard-title">
+                        Hello Patient
+                    </Typography>
+                    <Typography variant="h6" className="dashboard-date">
+                        Today is {formattedDate}
+                    </Typography>
                 </Box>
-                < Divider sx= {{paddingTop:'1rem'}}/>
-                <Box sx={{display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'start', paddingTop: '1em', paddingLeft:'3em'}}>
-                    <Typography variant="h4" >Welcome to CareTrack-Connect </Typography>
-                    <Typography variant="h6" >Check your status below and complete your check-in!</Typography>
+
+                <Divider sx={{ margin: '0 0 1.5rem 0' }} />
+
+                <Box className="dashboard-intro">
+                    <Typography variant="h4" className="section-title">
+                        Welcome to CareTrack Connect
+                    </Typography>
+                    <Typography variant="h6" className="dashboard-subtext">
+                        Check your status below and complete your daily check-in.
+                    </Typography>
                 </Box>
+
                 <Box className="status-card">
-                    <Typography variant="h3" >Status Card </Typography>
-                    <Typography variant="h4" >Today's Check-in: {isFinished ? 'Complete' : 'Not Started'} </Typography>
-                    <Button onClick={handleClick}sx={{border: 1, borderRadius: '30px', display: 'inline-block', paddingLeft:'1rem',paddingRight:'1rem', marginBottom:'.5rem', marginTop:'.5rem'}}>
-                        <Typography variant="h4"> {isFinished ? 'Edit Checkin' : 'Start Checkin'} </Typography>
+                    <Typography variant="h5" className="status-card-title">
+                        Status Card
+                    </Typography>
+
+                    <Typography variant="body1" className="status-label">
+                        Today's Check-in
+                    </Typography>
+
+                    <Typography variant="h4" className="status-value">
+                        {isFinished ? 'Complete' : 'Not Started'}
+                    </Typography>
+
+                    <Button
+                        variant="contained"
+                        onClick={handleClick}
+                        className="dashboard-action-btn"
+                    >
+                        {isFinished ? 'Edit Check-In' : 'Start Check-In'}
                     </Button>
                 </Box>
-                
-                
-
-                
             </section>
         </>
     );
 };
 
-export default PatientView
+export default PatientView;
