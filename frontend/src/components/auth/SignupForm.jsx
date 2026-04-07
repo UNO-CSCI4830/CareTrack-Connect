@@ -31,7 +31,9 @@ const SignupForm = () => {
                 password,
                 role,
             });
-            navigate(role === "patient" ? "/patient" : "/doctor");
+            navigate(role === "patient" ? "/patient" : "/doctor", {
+                state: role === "patient" ? { firstName } : undefined,
+            });
         } catch (err) {
             setError("An error occurred: " + (err?.message || err));
         } finally {

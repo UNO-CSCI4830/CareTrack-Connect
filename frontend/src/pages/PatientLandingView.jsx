@@ -1,9 +1,12 @@
+import { useEffect, useState } from "react";
 import NavigationDrawer from "../components/NavigationDrawer";
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { UserAuth } from "../components/auth/AuthContext";
+import ProfileService from "../services/profileService";
 
 const currentDate = new Date();
 const formattedDate = currentDate.toLocaleDateString();
@@ -11,10 +14,33 @@ const isFinished = false;
 
 const PatientView = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { session } = UserAuth();
+    const [firstName, setFirstName] = useState(location.state?.firstName || "");
 
     const handleClick = () => {
         navigate('/check-in');
     };
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (!session?.user?.id) {
+                return;
+            }
+
+            try {
+                const profileResponse = await ProfileService.getProfileByAuthUserId(session.user.id);
+                const profile = profileResponse?.data;
+                if (profile?.first_name) {
+                    setFirstName(profile.first_name);
+                }
+            } catch (error) {
+                console.error("Failed to load patient profile:", error);
+            }
+        };
+
+        fetchProfile();
+    }, [session]);
 
     return (
         <>
@@ -22,7 +48,7 @@ const PatientView = () => {
             <section id="top">
                 <Box className="dashboard-header">
                     <Typography variant="h4" className="dashboard-title">
-                        Hello Patient
+                        Hello {firstName || "Patient"}
                     </Typography>
                     <Typography variant="h6" className="dashboard-date">
                         Today is {formattedDate}
