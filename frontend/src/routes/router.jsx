@@ -11,15 +11,22 @@ import HistoryView from "../pages/HistoryView";
 import CheckInView from "../pages/CheckInView";
 import LogoutTest from "../pages/logoutTest";
 
+import DoctorCheckInsView from "../pages/DoctorCheckInsView";
+import DoctorAppointmentsView from "../pages/DoctorAppointmentsView";
+import DoctorReportsView from "../pages/DoctorReportsView";
+
 export const router = createBrowserRouter([
-    {path: "/", element: <App />},
-    {path: "/signup", element: <Signup />},
-    {path: "/login", element: <Login />},
-    {path: "/doctor", element: <DoctorView />},
-    {path: "/patient", element: <PatientView />},
-    {path: "/patient-profile", element: <PatientProfileView />},
-    {path: "/weekly-report", element: <WeeklyReportView />},
-    {path: "/history", element: <HistoryView />},
-    {path: "/check-in", element: <CheckInView />},
-    {path: "/logoutTest", element:<LogoutTest />}, 
+    { path: "/", element: <App /> },
+    { path: "/signup", element: <Signup /> },
+    { path: "/login", element: <Login /> },
+    { path: "/doctor", element: <DoctorView /> },
+    { path: "/doctor/check-ins", element: <DoctorCheckInsView /> },
+    { path: "/doctor/appointments", element: <DoctorAppointmentsView /> },
+    { path: "/doctor/reports", element: <DoctorReportsView /> },
+    { path: "/patient", element: <PatientView /> },
+    { path: "/patient-profile", element: <PatientProfileView /> },
+    { path: "/weekly-report", element: <WeeklyReportView /> },
+    { path: "/history", element: <HistoryView /> },
+    { path: "/check-in", element: <CheckInView /> },
+    { path: "/logoutTest", element: <LogoutTest /> },
 ]);

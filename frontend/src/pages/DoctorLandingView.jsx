@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Divider, Button, Chip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 
 const currentDate = new Date();
 const formattedDate = currentDate.toLocaleDateString();
+
+
 
 const mockPatients = [
   { id: 1, name: "Alice Johnson", lastCheckIn: "Today", status: "Critical", statusColor: "error" },
@@ -11,12 +15,14 @@ const mockPatients = [
 ];
 
 const quickActions = [
-  { label: "View All Check-Ins", icon: "📋", route: "/check-ins" },
-  { label: "Manage Appointments", icon: "📅", route: "/appointments" },
-  { label: "Patient Reports", icon: "📊", route: "/reports" },
+  { label: "View All Check-Ins", icon: "📋", route: "/doctor/check-ins" },
+  { label: "Manage Appointments", icon: "📅", route: "/doctor/appointments" },
+  { label: "Patient Reports", icon: "📊", route: "/doctor/reports" },
 ];
 
+
 const DoctorView = () => {
+    const navigate = useNavigate();
   const [firstName, setFirstName] = useState("Doctor");
   const [alerts] = useState([
     { id: 1, patient: "Alice Johnson", message: "Critical tremor score reported", time: "2 hrs ago" },
@@ -96,6 +102,7 @@ const DoctorView = () => {
           {quickActions.map((action) => (
             <Button
               key={action.label}
+              onClick={() => navigate(action.route)}
               variant="contained"
               sx={{
                 backgroundColor: "#378ADD",
