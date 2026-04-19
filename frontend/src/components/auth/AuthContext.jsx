@@ -1,10 +1,11 @@
-import {createContext, useState, useContext, useEffect} from "react";
+import {createContext, useState, useContext, useEffect, useRef} from "react";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "../../api/supabaseClient";
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
     const [session, setSession] = useState(undefined);
+    const sessionRef = useRef(null);
 
     
     
@@ -49,17 +50,19 @@ export const AuthContextProvider = ({ children }) => {
             console.error("Error logging out: ", error);
             return {success: false, error};
         }
-        return {success: true, data,};
+        return {success: true};
     }
     
     
     useEffect(() =>{
         supabase.auth.getSession().then(({data: {session}}) => {
         setSession(session);
+        sessionRef.current = session;
         });
 
         supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
+            sessionRef.current = session;
         });
     }, []);
     
