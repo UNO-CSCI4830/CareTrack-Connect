@@ -1,6 +1,6 @@
 import React from "react";
 import {Link, NavLink} from 'react-router-dom'
-import { LogoutButton } from "./auth/logoutButton";
+import { LogoutButton } from "./auth/LogoutButton";
 
 
 import styles from "../styles/navigationBar.module.css" // Optional: for styling
