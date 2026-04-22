@@ -1,4 +1,5 @@
 import { supabase } from "../supabaseAdminClient.js";
+import { AlertService } from "./alertService.js";
 
 export class CheckInResponseService {
   static async getAllCheckInResponses() {
@@ -59,6 +60,17 @@ export class CheckInResponseService {
       .select();
     
     if (error) throw error;
+
+    // Evaluate alert thresholds after responses are saved
+    if (data && data.length > 0) {
+      try {
+        const checkInId = data[0].check_in_id;
+        await AlertService.evaluateCheckIn(checkInId, data);
+      } catch (alertError) {
+        console.error("Alert evaluation failed (responses were still saved):", alertError);
+      }
+    }
+
     return data;
   }
 

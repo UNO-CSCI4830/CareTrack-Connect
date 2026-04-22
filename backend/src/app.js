@@ -13,6 +13,7 @@ import checkInRoutes from "./routes/checkIns.js";
 import checkInResponseRoutes from "./routes/checkInResponses.js";
 import questionRoutes from "./routes/questions.js";
 import attachmentRoutes from "./routes/attachments.js";
+import alertRoutes from "./routes/alerts.js";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use("/api/check-ins", checkInRoutes);
 app.use("/api/check-in-responses", checkInResponseRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/attachments", attachmentRoutes);
+app.use("/api/alerts", alertRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {

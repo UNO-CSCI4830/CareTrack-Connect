@@ -45,7 +45,7 @@ const paginateQuestions = (questions) => [
 ];
 
 const CheckInView = () => {
-  const { session } = UserAuth();
+  const { session, profile } = UserAuth();
 
   const [questions, setQuestions] = useState([]);
   const [pages, setPages] = useState([[], [], []]);
@@ -122,7 +122,7 @@ const CheckInView = () => {
   const handleSubmit = async () => {
     if (!isAllComplete) return;
 
-    const patientId = session?.user?.id;
+    const patientId = profile?.id;
 
     if (!patientId) {
       setSnackbar({
@@ -141,7 +141,8 @@ const CheckInView = () => {
 
       const responses = questions.map((q) => ({
         question_id: q.id,
-        response_value: answers[q.id],
+        numeric_value: q.question_type === "scale" ? answers[q.id] : null,
+        text_value: q.question_type === "free_text" ? answers[q.id] : null,
       }));
 
       await CheckInService.submitResponses(checkInId, responses);
