@@ -17,7 +17,7 @@ import DoctorReportsView from "../pages/DoctorReportsView";
 
 export const router = createBrowserRouter([
 {path: "/", element: <App />},
-    {path: "/signup/:role", element: <Signup />},
+    {path: "/signup", element: <Signup />},
     {path: "/login", element: <Login />},
     {path: "/doctor", element: <PrivateRoute><DoctorView /></PrivateRoute>},
     {path: "/doctor/check-ins", element: <PrivateRoute><DoctorCheckInsView /></PrivateRoute>},
