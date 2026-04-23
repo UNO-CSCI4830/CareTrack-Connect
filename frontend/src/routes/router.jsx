@@ -14,6 +14,9 @@ import PrivateRoute from "../components/auth/PrivateRoute";
 import DoctorCheckInsView from "../pages/DoctorCheckInsView";
 import DoctorAppointmentsView from "../pages/DoctorAppointmentsView";
 import DoctorReportsView from "../pages/DoctorReportsView";
+import BookAppointmentView from "../pages/BookAppointmentView";
+import MyAppointmentsView from "../pages/MyAppointmentsView";
+import DoctorAvailabilityView from "../pages/DoctorAvailabilityView";
 
 export const router = createBrowserRouter([
 {path: "/", element: <App />},
@@ -29,4 +32,7 @@ export const router = createBrowserRouter([
     {path: "/history", element: <PrivateRoute><HistoryView /></PrivateRoute>},
     {path: "/check-in", element: <PrivateRoute><CheckInView /></PrivateRoute>},
     {path: "/logoutTest", element: <PrivateRoute><LogoutTest /></PrivateRoute>},
+    {path: "/book-appointment", element: <PrivateRoute><BookAppointmentView /></PrivateRoute>},
+    {path: "/my-appointments", element: <PrivateRoute><MyAppointmentsView /></PrivateRoute>},
+    {path: "/doctor/availability", element: <PrivateRoute><DoctorAvailabilityView /></PrivateRoute>},
 ]);
