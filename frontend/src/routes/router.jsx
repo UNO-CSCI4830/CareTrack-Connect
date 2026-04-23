@@ -17,6 +17,7 @@ import DoctorReportsView from "../pages/DoctorReportsView";
 import BookAppointmentView from "../pages/BookAppointmentView";
 import MyAppointmentsView from "../pages/MyAppointmentsView";
 import DoctorAvailabilityView from "../pages/DoctorAvailabilityView";
+import DoctorPatientsView from "../pages/DoctorPatientsView";
 
 export const router = createBrowserRouter([
 {path: "/", element: <App />},
@@ -35,4 +36,5 @@ export const router = createBrowserRouter([
     {path: "/book-appointment", element: <PrivateRoute><BookAppointmentView /></PrivateRoute>},
     {path: "/my-appointments", element: <PrivateRoute><MyAppointmentsView /></PrivateRoute>},
     {path: "/doctor/availability", element: <PrivateRoute><DoctorAvailabilityView /></PrivateRoute>},
+    {path: "/doctor/patients", element: <PrivateRoute><DoctorPatientsView /></PrivateRoute>},
 ]);
