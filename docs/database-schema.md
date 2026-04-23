@@ -1,6 +1,26 @@
 -- WARNING: This schema is for context only and is not meant to be run.
 -- Table order and constraints may not be valid for execution.
 
+CREATE TABLE public.alerts (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  patient_id uuid NOT NULL,
+  provider_id uuid NOT NULL,
+  check_in_id uuid NOT NULL,
+  alert_type text NOT NULL CHECK (alert_type = ANY (ARRAY['high_total_score'::text, 'critical_single_response'::text])),
+  severity text NOT NULL DEFAULT 'warning'::text CHECK (severity = ANY (ARRAY['warning'::text, 'critical'::text])),
+  message text NOT NULL,
+  question_id uuid,
+  score_value integer,
+  total_score integer,
+  status text NOT NULL DEFAULT 'new'::text CHECK (status = ANY (ARRAY['new'::text, 'reviewed'::text, 'dismissed'::text])),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  reviewed_at timestamp with time zone,
+  CONSTRAINT alerts_pkey PRIMARY KEY (id),
+  CONSTRAINT alerts_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES public.profiles(id),
+  CONSTRAINT alerts_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id),
+  CONSTRAINT alerts_check_in_id_fkey FOREIGN KEY (check_in_id) REFERENCES public.check_ins(id),
+  CONSTRAINT alerts_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions(id)
+);
 CREATE TABLE public.attachments (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   patient_id uuid NOT NULL,
@@ -65,8 +85,8 @@ CREATE TABLE public.profiles (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   auth_user_id uuid NOT NULL UNIQUE,
   role text NOT NULL CHECK (role = ANY (ARRAY['patient'::text, 'provider'::text])),
-  first_name text NOT NULL,
-  last_name text NOT NULL,
+  first_name text NOT NULL CHECK (first_name IS NOT NULL AND TRIM(BOTH FROM first_name) <> ''::text),
+  last_name text NOT NULL CHECK (last_name IS NOT NULL AND TRIM(BOTH FROM last_name) <> ''::text),
   email text NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
