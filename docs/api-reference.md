@@ -82,6 +82,7 @@ const { data: { user } } = await supabase.auth.getUser()
 | `questions` | The 10 daily check-in questions + 1 free text | All authenticated users |
 | `check_ins` | One per patient per day, tracks completion status | Patient (own), assigned providers |
 | `check_in_responses` | Individual answers to each question per check-in | Patient (own), assigned providers |
+| `alerts` | Auto-generated risk threshold alerts | Assigned providers |
 | `attachments` | Voice memos, uploaded files | Patient (own), assigned providers |
 
 **Row Level Security (RLS)** is enabled on all tables. Users can only access data they are authorized to see.
@@ -488,6 +489,63 @@ const { data, error } = await supabase
 | `answered_at` | timestamptz | Auto-set |
 
 **NOTE:** Uses constraints on (check_in_id, question_id) to prevent duplicate or extra answers for a question per day.
+
+---
+
+## Alerts
+Alerts are generated automatically when a patient submits check-in responses that exceed predefined risk thresholds. There are two types of alerts:
+
+- **Critical single response:** Patient scores 4/4 on tremor severity, balance issues/near-falls, or medication breakthrough.
+- **High total score:** Patient's total symptom score across all scale questions exceeds 25/40 (warning) or 30/40 (critical).
+
+Alerts are created by the backend during check-in response submission. They do not need to be created manually.
+
+### Get Alerts for a Provider
+GET /api/alerts/provider/:providerId
+
+### Get New (Unreviewed) Alerts for a Provider
+GET /api/alerts/provider/:providerId/new
+
+### Get Alerts for a Patient
+GET /api/alerts/patient/:patientId
+
+### Get a Single Alert
+GET /api/alerts/:id
+
+### Update Alert Status
+PATCH /api/alerts/:id/status
+Content-Type: application/json
+{
+"status": "reviewed"   // "new", "reviewed", or "dismissed"
+}
+
+### Schema
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid | Primary key |
+| `patient_id` | uuid | FK → profiles |
+| `provider_id` | uuid | FK → profiles |
+| `check_in_id` | uuid | FK → check_ins |
+| `alert_type` | text | `'high_total_score'` or `'critical_single_response'` |
+| `severity` | text | `'warning'` or `'critical'` |
+| `message` | text | Human-readable alert description |
+| `question_id` | uuid | FK → questions, set for critical single response alerts |
+| `score_value` | int | The individual score that triggered the alert |
+| `total_score` | int | The aggregate score that triggered the alert |
+| `status` | text | `'new'`, `'reviewed'`, or `'dismissed'` |
+| `created_at` | timestamptz | Auto-set |
+| `reviewed_at` | timestamptz | Set when status changes to reviewed or dismissed |
+
+### Alert Thresholds
+| Trigger | Condition | Severity |
+|---------|-----------|----------|
+| Tremor severity | Score = 4/4 | Critical |
+| Balance issues / near-falls | Score = 4/4 | Critical |
+| Medication breakthrough | Score = 4/4 | Critical |
+| Total symptom score | 25-29/40 | Warning |
+| Total symptom score | 30+/40 | Critical |
+
+**NOTE:** Alert generation is wrapped in a try/catch so that failures never prevent check-in responses from being saved. If alert generation fails, the error is logged to the backend console but the check-in submission succeeds normally.
 
 ---
 
