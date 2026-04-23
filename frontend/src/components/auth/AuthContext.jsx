@@ -2,10 +2,12 @@ import {createContext, useState, useContext, useEffect, useRef, useCallback} fro
 import { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "../../api/supabaseClient";
 import SessionTimeoutWarning from "./SessionTimeoutWarning";
+import ProfileService from "../../services/profileService";
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
     const [session, setSession] = useState(undefined);
+    const [profile, setProfile] = useState(null);
     const sessionRef = useRef(null);
     const TIMEOUT_DURATION = 15 * 60 * 1000; // 15 min timer. Use `30 * 1000` for 30 second testing
     const timeoutRef = useRef(null);
@@ -114,20 +116,39 @@ export const AuthContextProvider = ({ children }) => {
         return {success: true, data};
     }
 
+    const fetchProfile = async (authUserId) => {
+        try {
+            const result = await ProfileService.getProfileByAuthUserId(authUserId);
+            const profileData = result.data ?? result;
+            setProfile(profileData);
+        } catch (err) {
+            console.error("Failed to fetch profile:", err);
+            setProfile(null);
+        }
+    };
+
     useEffect(() =>{
         supabase.auth.getSession().then(({data: {session}}) => {
             setSession(session);
             sessionRef.current = session;
+            if (session?.user?.id) {
+                fetchProfile(session.user.id);
+            }
         });
 
         supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
             sessionRef.current = session;
+            if (session?.user?.id) {
+                fetchProfile(session.user.id);
+            } else {
+                setProfile(null);
+            }
         });
     }, []);
 
     return (
-        <AuthContext.Provider value={{session, signUpNewUser, loginUser, logoutUser, showTimeoutWarning, extendSession}}>
+        <AuthContext.Provider value={{session, profile, signUpNewUser, loginUser, logoutUser, showTimeoutWarning, extendSession}}>
         {showTimeoutWarning && <SessionTimeoutWarning />}
         {children}
         </AuthContext.Provider>
