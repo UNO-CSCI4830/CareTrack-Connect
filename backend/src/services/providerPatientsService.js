@@ -34,9 +34,9 @@ export class ProviderPatientsService {
   static async getProvidersByPatientId(patientId) {
     const { data, error } = await supabase
       .from("provider_patients")
-      .select("*")
+      .select("*, provider:profiles!provider_patients_provider_id_fkey(id, first_name, last_name, email)")
       .eq("patient_id", patientId);
-    
+
     if (error) throw error;
     return data;
   }
