@@ -74,7 +74,9 @@ export default function NavigationDrawer() {
   const NavigationPageList = [
     {id:1, text: 'Dashboard', href: '/patient'},
     {id:2, text: 'Weekly Report', href: '/weekly-report'},
-    {id:3, text: 'History', href: '/history'}
+    {id:3, text: 'History', href: '/history'},
+    {id:4, text: 'Appointments', href: '/my-appointments'},
+    {id:5, text: 'Availability', href: '/doctor/availability'},
   ]
 
   //Styles for active/inactive links
