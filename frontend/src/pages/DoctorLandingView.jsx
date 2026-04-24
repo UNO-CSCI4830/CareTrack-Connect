@@ -1,261 +1,94 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Divider, Button, Chip } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import NavigationDrawer from "../components/NavigationDrawer";
+import { UserAuth } from "../components/auth/AuthContext";
+import ProfileService from "../services/profileService";
 
-
-const currentDate = new Date();
-const formattedDate = currentDate.toLocaleDateString();
-
-
-
-const mockPatients = [
-  { id: 1, name: "Alice Johnson", lastCheckIn: "Today", status: "Critical", statusColor: "error" },
-  { id: 2, name: "Bob Smith", lastCheckIn: "Yesterday", status: "Stable", statusColor: "success" },
-  { id: 3, name: "Carol White", lastCheckIn: "2 days ago", status: "Pending", statusColor: "warning" },
-];
+const formattedDate = new Date().toLocaleDateString();
 
 const quickActions = [
-  { label: "View All Check-Ins", icon: "📋", route: "/doctor/check-ins" },
-  { label: "Manage Appointments", icon: "📅", route: "/doctor/appointments" },
-  { label: "Patient Reports", icon: "📊", route: "/doctor/reports" },
+  { label: "View All Check-Ins", route: "/doctor/check-ins" },
+  { label: "Manage Appointments", route: "/doctor/appointments" },
+  { label: "Availability", route: "/doctor/availability" },
+  { label: "Patients", route: "/doctor/patients" },
+  { label: "Patient Reports", route: "/doctor/reports" },
 ];
 
-
 const DoctorView = () => {
-    const navigate = useNavigate();
-  const [firstName, setFirstName] = useState("Doctor");
-  const [alerts] = useState([
-    { id: 1, patient: "Alice Johnson", message: "Critical tremor score reported", time: "2 hrs ago" },
-    { id: 2, patient: "Carol White", message: "No check-in submitted today", time: "4 hrs ago" },
-  ]);
+  const navigate = useNavigate();
+  const { session } = UserAuth();
+  const [firstName, setFirstName] = useState("");
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        // const profileResponse = await ProfileService.getProfileByAuthUserId(session.user.id);
-        // if (profileResponse?.data?.first_name) setFirstName(profileResponse.data.first_name);
-      } catch (error) {
-        console.error("Failed to load doctor profile:", error);
-      }
-    };
-    fetchProfile();
-  }, []);
+    if (!session?.user?.id) return;
+    ProfileService.getProfileByAuthUserId(session.user.id)
+      .then((res) => {
+        const profile = res?.data || res;
+        if (profile?.first_name) setFirstName(profile.first_name);
+      })
+      .catch((err) => console.error("Failed to load doctor profile:", err));
+  }, [session]);
 
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto" }}>
-
-      {/* ── Blue Dashboard Banner ── */}
-      <Box
-        sx={{
-          backgroundColor: "#185FA5",
-          borderRadius: "0 0 20px 20px",
-          px: { xs: 2.5, md: 4 },
-          pt: 4,
-          pb: 3,
-          mb: 4,
-        }}
-      >
-        {/* Greeting */}
-        <Typography variant="h4" sx={{ color: "#E6F1FB", fontWeight: 600, mb: 0.5 }}>
-          Hello, Dr. {firstName}
-        </Typography>
-        <Typography variant="body1" sx={{ color: "#85B7EB", mb: 3 }}>
-          Today is {formattedDate}
-        </Typography>
-
-        {/* Stats Row */}
+    <Box>
+      <NavigationDrawer />
+      <Box sx={{ maxWidth: 900, mx: "auto" }}>
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" },
-            gap: 1.5,
-            mb: 3,
+            backgroundColor: "#185FA5",
+            borderRadius: "0 0 20px 20px",
+            px: { xs: 2.5, md: 4 },
+            pt: 4,
+            pb: 3,
+            mb: 4,
           }}
         >
-          {[
-            { label: "Total Patients", value: 3 },
-            { label: "Check-Ins Today", value: 1 },
-            { label: "Active Alerts", value: 2 },
-            { label: "Upcoming Appts", value: 4 },
-          ].map((stat) => (
-            <Box
-              key={stat.label}
-              sx={{
-                backgroundColor: "#0C447C",
-                borderRadius: "12px",
-                p: 1.5,
-                textAlign: "center",
-              }}
-            >
-              <Typography sx={{ color: "#85B7EB", fontSize: "12px", mb: 0.5 }}>
-                {stat.label}
-              </Typography>
-              <Typography sx={{ color: "#E6F1FB", fontSize: "28px", fontWeight: 600, lineHeight: 1 }}>
-                {stat.value}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
+          <Typography variant="h4" sx={{ color: "#E6F1FB", fontWeight: 600, mb: 0.5 }}>
+            Hello, Dr. {firstName}
+          </Typography>
+          <Typography variant="body1" sx={{ color: "#85B7EB", mb: 3 }}>
+            Today is {formattedDate}
+          </Typography>
 
-        {/* Quick Action Buttons */}
-        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
-          {quickActions.map((action) => (
-            <Button
-              key={action.label}
-              onClick={() => navigate(action.route)}
-              variant="contained"
-              sx={{
-                backgroundColor: "#378ADD",
-                color: "#E6F1FB",
-                fontWeight: 500,
-                borderRadius: "10px",
-                textTransform: "none",
-                px: 2.5,
-                py: 1,
-                boxShadow: "none",
-                fontSize: "14px",
-                "&:hover": {
-                  backgroundColor: "#B5D4F4",
-                  color: "#0C447C",
+          <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
+            {quickActions.map((action) => (
+              <Button
+                key={action.label}
+                onClick={() => navigate(action.route)}
+                variant="contained"
+                sx={{
+                  backgroundColor: "#378ADD",
+                  color: "#E6F1FB",
+                  fontWeight: 500,
+                  borderRadius: "10px",
+                  textTransform: "none",
+                  px: 2.5,
+                  py: 1,
                   boxShadow: "none",
-                },
-              }}
-            >
-              {action.label}
-            </Button>
-          ))}
-        </Box>
-      </Box>
-
-      {/* ── Body Content ── */}
-      <Box sx={{ px: { xs: 2, md: 3 } }}>
-
-        {/* Welcome blurb */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" fontWeight={600} gutterBottom>
-            Welcome to CareTrack Connect
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Review your patients' latest check-ins, respond to alerts, and manage appointments below.
-          </Typography>
-        </Box>
-
-        {/* Alerts Panel */}
-        <Box
-          sx={{
-            border: "1px solid",
-            borderColor: "error.light",
-            borderRadius: "12px",
-            p: 2.5,
-            mb: 3,
-            backgroundColor: "#fff5f5",
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} color="error.main" gutterBottom>
-            Active Alerts
-          </Typography>
-          {alerts.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">No active alerts.</Typography>
-          ) : (
-            alerts.map((alert) => (
-              <Box
-                key={alert.id}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  py: 1.5,
-                  borderBottom: "0.5px solid",
-                  borderColor: "divider",
-                  "&:last-child": { borderBottom: "none" },
+                  fontSize: "14px",
+                  "&:hover": {
+                    backgroundColor: "#B5D4F4",
+                    color: "#0C447C",
+                    boxShadow: "none",
+                  },
                 }}
               >
-                <Box>
-                  <Typography variant="body1" fontWeight={500}>{alert.patient}</Typography>
-                  <Typography variant="body2" color="text.secondary">{alert.message}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Typography variant="caption" color="text.secondary">{alert.time}</Typography>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="error"
-                    sx={{ borderRadius: "8px", textTransform: "none", fontWeight: 500 }}
-                  >
-                    Review
-                  </Button>
-                </Box>
-              </Box>
-            ))
-          )}
-        </Box>
-
-        {/* Patient List */}
-        <Box>
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            My Patients
-          </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-            {mockPatients.map((patient) => (
-              <Box
-                key={patient.id}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  border: "0.5px solid",
-                  borderColor: "divider",
-                  borderRadius: "12px",
-                  p: 2,
-                  backgroundColor: "background.paper",
-                }}
-              >
-                <Box>
-                  <Typography variant="body1" fontWeight={500}>{patient.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Last check-in: {patient.lastCheckIn}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <Chip
-                    label={patient.status}
-                    color={patient.statusColor}
-                    size="small"
-                    sx={{ fontWeight: 500, borderRadius: "8px" }}
-                  />
-                  <Button
-                    size="small"
-                    variant="contained"
-                    sx={{
-                      backgroundColor: "#6366f1",
-                      color: "white",
-                      fontWeight: 600,
-                      borderRadius: "8px",
-                      textTransform: "none",
-                      boxShadow: "none",
-                      "&:hover": { backgroundColor: "#4f46e5" },
-                    }}
-                  >
-                    View Profile
-                  </Button>
-                </Box>
-              </Box>
+                {action.label}
+              </Button>
             ))}
           </Box>
         </Box>
 
+        <Box sx={{ px: { xs: 2, md: 3 } }}>
+          <Typography variant="h5" fontWeight={600} gutterBottom>
+            Welcome to CareTrack Connect
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Review your patients' latest check-ins, respond to alerts, and manage appointments from the links above.
+          </Typography>
+        </Box>
       </Box>
-      <Box 
-      sx={{
-        borderRadius: "0 0 20px 20px",
-        px: { xs: 2.5, md: 4 },
-        pt: 2,
-        pb: 2,
-        mb: 2,
-      }}
-      >
-        
-    </Box>
     </Box>
   );
 };
