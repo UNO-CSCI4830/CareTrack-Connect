@@ -24,6 +24,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             value={formData.first_name}
                             onChange={handleInputChange}
                             size="small"
+                            slotProps={{ htmlInput: { 'aria-label': 'First Name' } }}
                         />
                     </Box>
 
@@ -37,6 +38,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             value={formData.last_name}
                             onChange={handleInputChange}
                             size="small"
+                            slotProps={{ htmlInput: { 'aria-label': 'Last Name' } }}
                         />
                     </Box>
 
@@ -50,6 +52,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             value={formData.email}
                             size="small"
                             disabled
+                            slotProps={{ htmlInput: { 'aria-label': 'Email' } }}
                         />
                     </Box>
 
@@ -64,6 +67,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             onChange={handleInputChange}
                             size="small"
                             type="tel"
+                            slotProps={{ htmlInput: { 'aria-label': 'Phone' } }}
                         />
                     </Box>
 
@@ -79,6 +83,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             size="small"
                             type="date"
                             InputLabelProps={{ shrink: true }}
+                            slotProps={{ htmlInput: { 'aria-label': 'Date of Birth' } }}
                         />
                     </Box>
                 </Box>
@@ -102,6 +107,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             value={formData.address_line1}
                             onChange={handleInputChange}
                             size="small"
+                            slotProps={{ htmlInput: { 'aria-label': 'Address Line 1' } }}
                         />
                     </Box>
 
@@ -115,6 +121,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             value={formData.address_line2}
                             onChange={handleInputChange}
                             size="small"
+                            slotProps={{ htmlInput: { 'aria-label': 'Address Line 2' } }}
                         />
                     </Box>
 
@@ -129,6 +136,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                                 value={formData.city}
                                 onChange={handleInputChange}
                                 size="small"
+                                slotProps={{ htmlInput: { 'aria-label': 'City' } }}
                             />
                         </Box>
 
@@ -142,6 +150,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                                 value={formData.state}
                                 onChange={handleInputChange}
                                 size="small"
+                                slotProps={{ htmlInput: { 'aria-label': 'State' } }}
                             />
                         </Box>
 
@@ -155,6 +164,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                                 value={formData.zip_code}
                                 onChange={handleInputChange}
                                 size="small"
+                                slotProps={{ htmlInput: { 'aria-label': 'Zip Code' } }}
                             />
                         </Box>
                     </Box>
@@ -179,6 +189,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             value={formData.emergency_contact_name}
                             onChange={handleInputChange}
                             size="small"
+                            slotProps={{ htmlInput: { 'aria-label': 'Contact Name' } }}
                         />
                     </Box>
 
@@ -193,6 +204,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             onChange={handleInputChange}
                             size="small"
                             type="tel"
+                            slotProps={{ htmlInput: { 'aria-label': 'Contact Phone' } }}
                         />
                     </Box>
 
@@ -206,6 +218,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             value={formData.emergency_contact_relation}
                             onChange={handleInputChange}
                             size="small"
+                            slotProps={{ htmlInput: { 'aria-label': 'Relationship' } }}
                         />
                     </Box>
                 </Box>
@@ -232,6 +245,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             multiline
                             rows={2}
                             placeholder="e.g., Penicillin, Peanuts"
+                            slotProps={{ htmlInput: { 'aria-label': 'Allergies' } }}
                         />
                     </Box>
 
@@ -248,6 +262,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             multiline
                             rows={2}
                             placeholder="e.g., Aspirin, Metformin"
+                            slotProps={{ htmlInput: { 'aria-label': 'Current Medications' } }}
                         />
                     </Box>
 
@@ -264,6 +279,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             multiline
                             rows={2}
                             placeholder="e.g., Diabetes, Hypertension"
+                            slotProps={{ htmlInput: { 'aria-label': 'Medical Conditions' } }}
                         />
                     </Box>
 
@@ -280,6 +296,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                                 size="small"
                                 type="date"
                                 InputLabelProps={{ shrink: true }}
+                                slotProps={{ htmlInput: { 'aria-label': 'Diagnosis Date' } }}
                             />
                         </Box>
 
@@ -293,6 +310,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                                 value={formData.disease_stage}
                                 onChange={handleInputChange}
                                 size="small"
+                                slotProps={{ htmlInput: { 'aria-label': 'Disease Stage' } }}
                             />
                         </Box>
                     </Box>
@@ -309,6 +327,7 @@ const EditProfile = ({ formData, handleInputChange, handleSave, handleCancel }) 
                             size="small"
                             multiline
                             rows={3}
+                            slotProps={{ htmlInput: { 'aria-label': 'Notes' } }}
                         />
                     </Box>
                 </Box>
