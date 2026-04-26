@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { DateTime } from "luxon";
 import NavigationDrawer from "../components/NavigationDrawer";
 import { UserAuth } from "../components/auth/AuthContext";
@@ -10,11 +11,11 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
-import Chip from "@mui/material/Chip";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -23,8 +24,9 @@ function fmt(iso) {
   return DateTime.fromISO(iso).toLocal().toFormat("cccc, LLL d · h:mm a");
 }
 
-export default function DoctorAppointmentsView() {
+export default function MyAppointmentsView() {
   const { session } = UserAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [appts, setAppts] = useState([]);
   const [rescheduling, setRescheduling] = useState(null);
@@ -32,6 +34,12 @@ export default function DoctorAppointmentsView() {
   const [rescheduleSlots, setRescheduleSlots] = useState([]);
   const [chosenSlot, setChosenSlot] = useState(null);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+
+  async function refresh() {
+    if (!profile) return;
+    const res = await AppointmentService.listForPatient(profile.id);
+    setAppts(res.data || []);
+  }
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -41,19 +49,14 @@ export default function DoctorAppointmentsView() {
     })();
   }, [session]);
 
-  async function refresh() {
-    if (!profile) return;
-    const res = await AppointmentService.listForProvider(profile.id);
-    setAppts(res.data || []);
-  }
   useEffect(() => { if (profile) refresh(); }, [profile]);
 
   useEffect(() => {
     if (!rescheduling || !rescheduleDate) { setRescheduleSlots([]); return; }
-    AppointmentService.getAvailability(profile.id, rescheduleDate, rescheduleDate)
+    AppointmentService.getAvailability(rescheduling.provider_id, rescheduleDate, rescheduleDate)
       .then((res) => setRescheduleSlots(res.data || []))
       .catch((e) => setSnack({ open: true, message: e.message, severity: "error" }));
-  }, [rescheduling, rescheduleDate, profile]);
+  }, [rescheduling, rescheduleDate]);
 
   const onCancel = async (appt) => {
     if (!confirm("Cancel this appointment?")) return;
@@ -71,7 +74,9 @@ export default function DoctorAppointmentsView() {
     try {
       await AppointmentService.reschedule(rescheduling.id, chosenSlot.start_at);
       setSnack({ open: true, message: "Rescheduled", severity: "success" });
-      setRescheduling(null); setChosenSlot(null); setRescheduleDate("");
+      setRescheduling(null);
+      setChosenSlot(null);
+      setRescheduleDate("");
       refresh();
     } catch (e) {
       setSnack({ open: true, message: e.message, severity: "error" });
@@ -88,10 +93,14 @@ export default function DoctorAppointmentsView() {
         <Box>
           <Typography fontWeight="bold">{fmt(a.start_at)}</Typography>
           <Typography variant="body2" color="text.secondary">
-            Patient: {a.patient?.first_name} {a.patient?.last_name}
+            Dr. {a.provider?.first_name} {a.provider?.last_name}
           </Typography>
-          {a.reason && <Typography variant="body2" sx={{ mt: 0.5 }}>Reason: {a.reason}</Typography>}
-          {!isUpcoming && <Chip size="small" label={a.status} sx={{ mt: 0.5 }} />}
+          {a.reason && (
+            <Typography variant="body2" sx={{ mt: 0.5 }}>Reason: {a.reason}</Typography>
+          )}
+          {!isUpcoming && (
+            <Chip size="small" label={a.status} sx={{ mt: 0.5 }} />
+          )}
         </Box>
         {isUpcoming && (
           <Stack direction="row" spacing={1}>
@@ -107,7 +116,10 @@ export default function DoctorAppointmentsView() {
     <Box>
       <NavigationDrawer />
       <Box sx={{ p: 4, maxWidth: 720, mx: "auto" }}>
-        <Typography variant="h4" gutterBottom>Appointments</Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+          <Typography variant="h4">My appointments</Typography>
+          <Button variant="contained" onClick={() => navigate("/book-appointment")}>Book new</Button>
+        </Stack>
 
         <Typography variant="h6" sx={{ mt: 2 }}>Upcoming</Typography>
         {upcoming.length === 0 ? (
@@ -123,7 +135,7 @@ export default function DoctorAppointmentsView() {
       </Box>
 
       <Dialog open={!!rescheduling} onClose={() => setRescheduling(null)} fullWidth maxWidth="xs">
-        <DialogTitle>Reschedule</DialogTitle>
+        <DialogTitle>Reschedule appointment</DialogTitle>
         <DialogContent>
           <TextField
             type="date"

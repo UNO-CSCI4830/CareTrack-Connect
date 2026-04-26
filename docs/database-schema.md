@@ -102,6 +102,7 @@ CREATE TABLE public.provider_details (
   clinic_address text,
   npi_number text,
   accepting_patients boolean DEFAULT true,
+  timezone text NOT NULL DEFAULT 'America/Chicago',
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT provider_details_pkey PRIMARY KEY (id),
@@ -130,3 +131,47 @@ CREATE TABLE public.questions (
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT questions_pkey PRIMARY KEY (id)
 );
+
+CREATE TABLE public.provider_availability (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  provider_id uuid NOT NULL,
+  day_of_week smallint NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
+  start_time time NOT NULL,
+  end_time time NOT NULL CHECK (end_time > start_time),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT provider_availability_pkey PRIMARY KEY (id),
+  CONSTRAINT provider_availability_provider_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id),
+  CONSTRAINT provider_availability_unique_slot UNIQUE (provider_id, day_of_week, start_time)
+);
+CREATE TABLE public.provider_availability_exceptions (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  provider_id uuid NOT NULL,
+  start_at timestamp with time zone NOT NULL,
+  end_at timestamp with time zone NOT NULL CHECK (end_at > start_at),
+  reason text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT provider_availability_exceptions_pkey PRIMARY KEY (id),
+  CONSTRAINT provider_availability_exceptions_provider_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.appointments (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  provider_id uuid NOT NULL,
+  patient_id uuid NOT NULL,
+  start_at timestamp with time zone NOT NULL,
+  end_at timestamp with time zone NOT NULL CHECK (end_at = start_at + interval '1 hour'),
+  status text NOT NULL DEFAULT 'scheduled'
+         CHECK (status IN ('scheduled','cancelled','completed')),
+  reason text,
+  cancelled_at timestamp with time zone,
+  cancelled_by uuid,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT appointments_pkey PRIMARY KEY (id),
+  CONSTRAINT appointments_provider_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id),
+  CONSTRAINT appointments_patient_fkey FOREIGN KEY (patient_id) REFERENCES public.profiles(id),
+  CONSTRAINT appointments_cancelled_by_fkey FOREIGN KEY (cancelled_by) REFERENCES public.profiles(id)
+);
+-- Prevents double-booking at the DB level:
+CREATE UNIQUE INDEX appointments_unique_scheduled_slot
+  ON public.appointments (provider_id, start_at)
+  WHERE status = 'scheduled';

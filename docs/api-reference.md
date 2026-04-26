@@ -84,6 +84,9 @@ const { data: { user } } = await supabase.auth.getUser()
 | `check_in_responses` | Individual answers to each question per check-in | Patient (own), assigned providers |
 | `alerts` | Auto-generated risk threshold alerts | Assigned providers |
 | `attachments` | Voice memos, uploaded files | Patient (own), assigned providers |
+| `provider_availability` | Weekly recurring availability template per provider | Provider (own), patients booking slots |
+| `provider_availability_exceptions` | One-off time-off / blocked ranges | Provider (own), patients booking slots |
+| `appointments` | Booked 1-hour slots between a patient and provider | Both sides of the relationship |
 
 **Row Level Security (RLS)** is enabled on all tables. Users can only access data they are authorized to see.
 
@@ -244,6 +247,7 @@ const { data, error } = await supabase
 | `clinic_address` | text | |
 | `npi_number` | text | National Provider Identifier |
 | `accepting_patients` | boolean | Default: true |
+| `timezone` | text | IANA zone used to interpret the weekly availability template. Default: `'America/Chicago'` |
 | `updated_at` | timestamptz | Auto-updated on edit |
 | `created_at` | timestamptz | Auto-set |
 
@@ -711,6 +715,156 @@ const totalScore = data
   ?.filter(r => r.questions.question_type === 'scale')
   .reduce((sum, r) => sum + (r.numeric_value || 0), 0)
 ```
+
+---
+
+## Appointments
+Patients schedule 1-hour appointments against a provider's weekly availability template. Backed by three tables (`provider_availability`, `provider_availability_exceptions`, `appointments`) and served by the Express backend at `/api/appointments`, `/api/provider-availability`, and `/api/provider-availability-exceptions`.
+
+Unlike the tables above, the appointments feature is accessed via the Express backend (not the Supabase client from the browser). The backend uses the Supabase service-role key and does not enforce RLS on these tables; authorization is deferred to a future effort (see the appointments design spec).
+
+### Provider Availability — Weekly Template
+The provider's recurring weekly schedule. A provider may have multiple blocks per day (e.g., 9–12 and 1–5). Each block is interpreted in the provider's `provider_details.timezone`.
+
+```javascript
+// List the provider's weekly blocks
+const res = await fetch(`/api/provider-availability/${providerProfileId}`)
+const { data } = await res.json()
+
+// Add a block (e.g., Monday 9am–12pm)
+await fetch('/api/provider-availability', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    provider_id: providerProfileId,
+    day_of_week: 1,           // 0 = Sunday, 6 = Saturday
+    start_time: '09:00:00',
+    end_time: '12:00:00',
+  }),
+})
+
+// Remove a block (edits are delete-then-recreate)
+await fetch(`/api/provider-availability/${blockId}`, { method: 'DELETE' })
+```
+
+#### Schema (`provider_availability`)
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid | Primary key |
+| `provider_id` | uuid | FK → profiles |
+| `day_of_week` | smallint | 0 = Sunday … 6 = Saturday |
+| `start_time` | time | Local time in provider's timezone |
+| `end_time` | time | Must be `> start_time` |
+| `created_at` | timestamptz | Auto-set |
+
+Unique constraint: `(provider_id, day_of_week, start_time)`.
+
+### Provider Availability — Time-Off Exceptions
+One-off blocked ranges (vacation, meeting, holiday). Exceptions only *block*; they cannot add availability outside the weekly template.
+
+```javascript
+// List exceptions for a provider
+await fetch(`/api/provider-availability-exceptions/${providerProfileId}`)
+
+// Add a time-off range
+await fetch('/api/provider-availability-exceptions', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    provider_id: providerProfileId,
+    start_at: '2026-07-01T14:00:00Z',
+    end_at:   '2026-07-05T22:00:00Z',
+    reason: 'Vacation',
+  }),
+})
+
+// Remove
+await fetch(`/api/provider-availability-exceptions/${exceptionId}`, { method: 'DELETE' })
+```
+
+#### Schema (`provider_availability_exceptions`)
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid | Primary key |
+| `provider_id` | uuid | FK → profiles |
+| `start_at` | timestamptz | UTC start |
+| `end_at` | timestamptz | Must be `> start_at` |
+| `reason` | text | Optional |
+| `created_at` | timestamptz | Auto-set |
+
+### Appointments — Slot Discovery
+Computed on demand from the template, exceptions, and existing bookings. Never persisted. Returns 1-hour slots clamped to `[today, today + 60 days]` in the provider's timezone.
+
+```javascript
+// Get open slots for a date range
+const res = await fetch(
+  `/api/appointments/availability/${providerProfileId}?from=2026-05-04&to=2026-05-10`
+)
+const { data } = await res.json()
+// data: [{ start_at: "2026-05-04T14:00:00.000Z", end_at: "2026-05-04T15:00:00.000Z" }, ...]
+```
+
+### Appointments — Book / Reschedule / Cancel
+Bookings require an `active` row in `provider_patients` linking the patient to the provider. Duplicate `scheduled` bookings for the same `(provider_id, start_at)` are rejected with HTTP 409 (enforced by a partial unique index).
+
+```javascript
+// List a patient's appointments (embeds provider name)
+await fetch(`/api/appointments?patient_id=${patientProfileId}`)
+
+// List a provider's appointments (embeds patient name)
+await fetch(`/api/appointments?provider_id=${providerProfileId}`)
+
+// Book — server derives end_at = start_at + 1h
+await fetch('/api/appointments', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    provider_id: providerProfileId,
+    patient_id:  patientProfileId,
+    start_at:    '2026-05-04T15:00:00Z',
+    reason:      'Follow-up',          // optional
+  }),
+})
+// → 201 on success, 400 if outside the 60-day horizon or in the past,
+//   403 if the patient isn't linked to the provider, 409 on race.
+
+// Reschedule
+await fetch(`/api/appointments/${appointmentId}`, {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ start_at: '2026-05-05T16:00:00Z' }),
+})
+
+// Cancel (soft — row is retained for history, slot becomes bookable again)
+await fetch(`/api/appointments/${appointmentId}`, {
+  method: 'DELETE',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ cancelled_by: profileIdOfTheCanceller }),
+})
+```
+
+#### Schema (`appointments`)
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid | Primary key |
+| `provider_id` | uuid | FK → profiles |
+| `patient_id` | uuid | FK → profiles |
+| `start_at` | timestamptz | UTC |
+| `end_at` | timestamptz | Must equal `start_at + 1 hour` |
+| `status` | text | `'scheduled'` \| `'cancelled'` \| `'completed'` (default `'scheduled'`) |
+| `reason` | text | Optional, set at booking |
+| `cancelled_at` | timestamptz | Set on cancel |
+| `cancelled_by` | uuid | FK → profiles, set on cancel |
+| `created_at` | timestamptz | Auto-set |
+| `updated_at` | timestamptz | Bumped on reschedule / cancel |
+
+**Double-booking guard:**
+```sql
+CREATE UNIQUE INDEX appointments_unique_scheduled_slot
+  ON public.appointments (provider_id, start_at)
+  WHERE status = 'scheduled';
+```
+Cancelled rows do not occupy the slot — rebooking after a cancellation is allowed.
 
 ---
 
