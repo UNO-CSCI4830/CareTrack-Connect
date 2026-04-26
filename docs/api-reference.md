@@ -404,7 +404,42 @@ const { data: history, error } = await supabase
   .order('check_in_date', { ascending: false })
 ```
 
-### Provider: Get a Patient's Check-ins
+### Provider: Get All Assigned Patients' Check-ins
+```
+GET /api/check-ins/provider/:providerId
+```
+Returns all check-ins for the provider's **active** patients, ordered by date descending. Each check-in includes the patient's name and all responses with question details.
+
+Response shape:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "...",
+      "patient_id": "...",
+      "check_in_date": "2026-04-16",
+      "status": "complete",
+      "patient": { "id": "...", "first_name": "Jane", "last_name": "Doe" },
+      "check_in_responses": [
+        {
+          "numeric_value": 2,
+          "text_value": null,
+          "question": { "question_text": "Tremor severity today?", "question_type": "scale" }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Provider: Get a Specific Patient's Check-ins (Authorized)
+```
+GET /api/check-ins/provider/:providerId/patient/:patientId
+```
+Returns check-ins for a single patient, but **only if** the patient is actively assigned to the provider. Returns `401 Unauthorized` if the provider-patient relationship does not exist or is inactive.
+
+### Provider: Get a Patient's Check-ins (Supabase Direct)
 ```javascript
 // RLS ensures only assigned patients are visible
 const { data, error } = await supabase
