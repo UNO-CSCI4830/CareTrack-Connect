@@ -14,6 +14,7 @@ import LogoutTest from "../pages/logoutTest";
 import DoctorCheckInsView from "../pages/DoctorCheckInsView";
 import DoctorAppointmentsView from "../pages/DoctorAppointmentsView";
 import DoctorReportsView from "../pages/DoctorReportsView";
+import AudioCaptureView from "../pages/AudioCaptureView";
 
 export const router = createBrowserRouter([
     { path: "/", element: <App /> },
@@ -29,4 +30,5 @@ export const router = createBrowserRouter([
     { path: "/history", element: <HistoryView /> },
     { path: "/check-in", element: <CheckInView /> },
     { path: "/logoutTest", element: <LogoutTest /> },
+    { path: "/audio-capture", element: <AudioCaptureView /> },
 ]);
