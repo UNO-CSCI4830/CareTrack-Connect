@@ -44,7 +44,7 @@ export default function NavigationDrawer() {
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
         {IconList.map((item) => (
-          <>
+          <React.Fragment key={item.id}>
           <ListItem key={item.id} disablePadding >
             <ListItemButton >
               <Box component={Link} to={item.href} 
@@ -64,7 +64,7 @@ export default function NavigationDrawer() {
             
           </ListItem>
           <Divider />
-          </>
+          </React.Fragment>
         ))}
       </List>
     </Box>
