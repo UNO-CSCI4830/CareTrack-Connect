@@ -1,4 +1,5 @@
 import express from "express";
+import { encrypt } from "../utils/encryption.js";
 
 const router = express.Router();
 
@@ -71,7 +72,7 @@ router.post("/patients/:id/remove", requireLogin, (req, res) => {
 
   patient.name = "Removed";
   patient.email = null;
-  patient.healthRecord = "Removed";
+  patient.healthRecord = encrypt("Removed");
 
   logAction(req.user.id, "DATA_REMOVED");
 
