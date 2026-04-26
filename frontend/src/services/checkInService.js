@@ -29,6 +29,20 @@ class CheckInService {
     if (!response.ok) throw new Error(data.message || "Failed to submit responses");
     return data;
   }
+
+  static async getCheckInsForProvider(providerId) {
+    const response = await fetch(`${BASE_URL}/check-ins/provider/${providerId}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Failed to fetch provider check-ins");
+    return data;
+  }
+
+  static async getCheckInsByPatientForProvider(providerId, patientId) {
+    const response = await fetch(`${BASE_URL}/check-ins/provider/${providerId}/patient/${patientId}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Failed to fetch patient check-ins");
+    return data;
+  }
 }
 
 export default CheckInService;
