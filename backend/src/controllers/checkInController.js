@@ -82,4 +82,29 @@ export class CheckInController {
       next(error);
     }
   }
+
+  static async getCheckInsForProvider(req, res, next) {
+    try {
+      const { providerId } = req.params;
+      const checkIns = await CheckInService.getCheckInsForProvider(providerId);
+      httpResponse.success(res, checkIns, 200, "Provider check-ins retrieved successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getCheckInsByPatientIdForProvider(req, res, next) {
+    try {
+      const { providerId, patientId } = req.params;
+      const checkIns = await CheckInService.getCheckInsByPatientIdForProvider(providerId, patientId);
+
+      if (checkIns === null) {
+        return httpResponse.unauthorized(res, "This patient is not assigned to you");
+      }
+
+      httpResponse.success(res, checkIns, 200, "Patient check-ins retrieved successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
 }
