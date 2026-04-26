@@ -27,3 +27,23 @@ This route:
 - Returns a confirmation message after completion
 
 This ensures compliance with HIPAA requirements for data retention, access control, accountability, and user notification.
+
+## Data Encryption Requirement
+
+All patient data is encrypted both in transit and at rest.
+
+### Backend Implementation
+
+Encryption at rest is handled using AES-256 encryption in:
+
+backend/src/utils/encryption.js
+
+Patient data (such as health records) is encrypted before being stored or modified in the system.
+
+Encryption is applied in:
+
+backend/src/routes/hipaaRoutes.js
+
+For data in transit, the system is designed to run over HTTPS (TLS 1.2 or higher), ensuring secure communication between client and server.
+
+This ensures compliance with industry-standard encryption protocols.
