@@ -7,12 +7,17 @@ import { httpResponse } from "./utils/httpResponse.js";
 // Route imports
 import profileRoutes from "./routes/profiles.js";
 import patientDetailsRoutes from "./routes/patientDetails.js";
+import hipaaRoutes from "./routes/hipaaRoutes.js";
 import providerDetailsRoutes from "./routes/providerDetails.js";
 import providerPatientsRoutes from "./routes/providerPatients.js";
 import checkInRoutes from "./routes/checkIns.js";
 import checkInResponseRoutes from "./routes/checkInResponses.js";
 import questionRoutes from "./routes/questions.js";
 import attachmentRoutes from "./routes/attachments.js";
+import appointmentRoutes from "./routes/appointments.js";
+import providerAvailabilityRoutes from "./routes/providerAvailability.js";
+import providerAvailabilityExceptionRoutes from "./routes/providerAvailabilityExceptions.js";
+import alertRoutes from "./routes/alerts.js";
 
 dotenv.config();
 
@@ -34,12 +39,17 @@ app.get("/api/health", (req, res) => {
 // API Routes
 app.use("/api/profiles", profileRoutes);
 app.use("/api/patient-details", patientDetailsRoutes);
+app.use("/api", hipaaRoutes);
 app.use("/api/provider-details", providerDetailsRoutes);
 app.use("/api/provider-patients", providerPatientsRoutes);
 app.use("/api/check-ins", checkInRoutes);
 app.use("/api/check-in-responses", checkInResponseRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/attachments", attachmentRoutes);
+app.use("/api/appointments", appointmentRoutes);
+app.use("/api/provider-availability", providerAvailabilityRoutes);
+app.use("/api/provider-availability-exceptions", providerAvailabilityExceptionRoutes);
+app.use("/api/alerts", alertRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {

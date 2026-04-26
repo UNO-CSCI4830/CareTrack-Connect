@@ -43,4 +43,11 @@ export const httpResponse = {
       message,
     });
   },
+
+  conflict: (res, message = "Conflict") => {
+    res.status(409).json({
+      success: false,
+      message,
+    });
+  },
 };
