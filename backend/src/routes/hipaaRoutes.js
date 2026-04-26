@@ -1,4 +1,5 @@
-const express = require("express");
+import express from "express";
+
 const router = express.Router();
 
 let patients = [
@@ -38,7 +39,7 @@ function logAction(userId, action) {
 }
 
 router.get("/patients/:id", requireLogin, requireRole(["admin", "doctor"]), (req, res) => {
-  const patient = patients.find(p => p.id === Number(req.params.id));
+  const patient = patients.find((p) => p.id === Number(req.params.id));
 
   if (!patient) {
     return res.status(404).json({ message: "Patient not found" });
@@ -50,7 +51,7 @@ router.get("/patients/:id", requireLogin, requireRole(["admin", "doctor"]), (req
 });
 
 router.post("/patients/:id/remove", requireLogin, (req, res) => {
-  const patient = patients.find(p => p.id === Number(req.params.id));
+  const patient = patients.find((p) => p.id === Number(req.params.id));
 
   if (!patient) {
     return res.status(404).json({ message: "Patient not found" });
@@ -81,4 +82,4 @@ router.get("/audit-logs", requireLogin, requireRole(["admin"]), (req, res) => {
   res.json(auditLogs);
 });
 
-module.exports = router;
+export default router;
