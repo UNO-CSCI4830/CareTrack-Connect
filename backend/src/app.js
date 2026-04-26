@@ -44,6 +44,10 @@ app.use("/api/check-ins", checkInRoutes);
 app.use("/api/check-in-responses", checkInResponseRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/attachments", attachmentRoutes);
+app.use("/api/appointments", appointmentRoutes);
+app.use("/api/provider-availability", providerAvailabilityRoutes);
+app.use("/api/provider-availability-exceptions", providerAvailabilityExceptionRoutes);
+app.use("/api/alerts", alertRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {
