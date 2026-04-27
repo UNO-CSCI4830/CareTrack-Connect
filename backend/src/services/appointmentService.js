@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { supabase } from "../supabaseAdminClient.js";
 import { computeAvailableSlots } from "./availabilityService.js";
+import { NotificationService } from "./notificationService.js";
 
 const HORIZON_DAYS = 60;
 
@@ -74,6 +75,32 @@ export class AppointmentService {
       }
       throw error;
     }
+
+    // Notification for the provider about a new booking
+    try {
+      const { data: patient } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", patient_id)
+        .single();
+
+      const patientName = patient
+        ? `${patient.first_name} ${patient.last_name}`
+        : "A patient";
+
+      const startLocal = startUtc.toLocaleString(DateTime.DATETIME_MED);
+
+      await NotificationService.create({
+        recipient_id: provider_id,
+        sender_id: patient_id,
+        type: "appointment_booked",
+        message: `${patientName} booked an appointment for ${startLocal}`,
+        related_appointment_id: data.id,
+      });
+    } catch (notifError) {
+      console.error("Notification failed (appointment was still booked):", notifError);
+    }
+
     return data;
   }
 

@@ -87,7 +87,8 @@ const { data: { user } } = await supabase.auth.getUser()
 | `provider_availability` | Weekly recurring availability template per provider | Provider (own), patients booking slots |
 | `provider_availability_exceptions` | One-off time-off / blocked ranges | Provider (own), patients booking slots |
 | `appointments` | Booked 1-hour slots between a patient and provider | Both sides of the relationship |
-
+| `notifications`| In-app alerts triggered by appointment events | Recipient user |
+  
 **Row Level Security (RLS)** is enabled on all tables. Users can only access data they are authorized to see.
 
 ---
@@ -902,6 +903,56 @@ CREATE UNIQUE INDEX appointments_unique_scheduled_slot
 Cancelled rows do not occupy the slot — rebooking after a cancellation is allowed.
 
 ---
+
+## Notifications
+In-app notifications are generated automatically when an appointment-related event occurs. Currently, a notification is created for the provider whenever a patient books an appointment. Notifications for cancellations and reschedules can be added in a future sprint.
+
+Notifications get created by the backend when booked.  They do not not need to be created manually.
+
+### Get All Notifications for a User
+```
+GET /api/notifications/recipient/:recipientId
+```
+Returns all notifications for the user, newest first. Includes the sender's name via a join on profiles.
+
+### Get Unread Notifications for a User
+```
+GET /api/notifications/recipient/:recipientId/unread
+```
+
+### Get a Single Notification
+```
+GET /api/notifications/:id
+```
+
+### Update Notification Status
+```
+PATCH /api/notifications/:id/status
+Content-Type: application/json
+{
+  "status": "read"   // "unread", "read", or "dismissed"
+}
+```
+
+### Mark All Notifications as Read
+```
+PATCH /api/notifications/recipient/:recipientId/read-all
+```
+
+### Schema
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid | Primary key |
+| `recipient_id` | uuid | FK → profiles, the user who receives the notification |
+| `sender_id` | uuid | FK → profiles, the user who triggered the event (nullable) |
+| `type` | text | `'appointment_booked'` \| `'appointment_cancelled'` \| `'appointment_rescheduled'` |
+| `message` | text | Human-readable notification text |
+| `related_appointment_id` | uuid | FK → appointments (nullable) |
+| `status` | text | `'unread'` \| `'read'` \| `'dismissed'` (default `'unread'`) |
+| `read_at` | timestamptz | Set when status changes to read or dismissed |
+| `created_at` | timestamptz | Auto-set |
+
+**NOTE:** Notification generation is wrapped in a try/catch so that failures never prevent an appointment from being booked. If notification creation fails, the error is logged to the backend console but the appointment booking succeeds normally.
 
 ## Storage Setup
 NOTE: Must create a storage bucket in the Supabase Dashboard first:

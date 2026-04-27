@@ -18,6 +18,7 @@ import appointmentRoutes from "./routes/appointments.js";
 import providerAvailabilityRoutes from "./routes/providerAvailability.js";
 import providerAvailabilityExceptionRoutes from "./routes/providerAvailabilityExceptions.js";
 import alertRoutes from "./routes/alerts.js";
+import notificationRoutes from "./routes/notifications.js";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/provider-availability", providerAvailabilityRoutes);
 app.use("/api/provider-availability-exceptions", providerAvailabilityExceptionRoutes);
 app.use("/api/alerts", alertRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {
