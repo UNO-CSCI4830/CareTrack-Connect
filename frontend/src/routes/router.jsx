@@ -43,3 +43,8 @@ export const router = createBrowserRouter([
     {path: "/doctor/patients", element: <PrivateRoute><DoctorPatientsView /></PrivateRoute>},
     { path: "/audio-capture", element: <AudioCaptureView /> },
 ]);
+import PatientHistoryView from "./pages/PatientHistoryView";
+{
+  path: "/patient-history",
+  element: <PatientHistoryView />,
+}
