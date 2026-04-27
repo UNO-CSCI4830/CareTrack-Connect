@@ -33,18 +33,13 @@ export const router = createBrowserRouter([
     {path: "/doctor/reports", element: <PrivateRoute><DoctorReportsView /></PrivateRoute>},
     {path: "/patient", element: <PrivateRoute><PatientView /></PrivateRoute>},
     {path: "/patient-profile", element: <PrivateRoute><PatientProfileView /></PrivateRoute>},
-    {path: "/weekly-report", element: <PrivateRoute><WeeklyReportView /></PrivateRoute>},
-    {path: "/history", element: <PrivateRoute><HistoryView /></PrivateRoute>},
-    {path: "/check-in", element: <PrivateRoute><CheckInView /></PrivateRoute>},
+    {path: "/patient/weekly-report", element: <PrivateRoute><WeeklyReportView /></PrivateRoute>},
+    {path: "/patient/history", element: <PrivateRoute><HistoryView /></PrivateRoute>},
+    {path: "/patient/check-in", element: <PrivateRoute><CheckInView /></PrivateRoute>},
     {path: "/logoutTest", element: <PrivateRoute><LogoutTest /></PrivateRoute>},
     {path: "/book-appointment", element: <PrivateRoute><BookAppointmentView /></PrivateRoute>},
-    {path: "/my-appointments", element: <PrivateRoute><MyAppointmentsView /></PrivateRoute>},
+    {path: "/patient/appointments", element: <PrivateRoute><MyAppointmentsView /></PrivateRoute>},
     {path: "/doctor/availability", element: <PrivateRoute><DoctorAvailabilityView /></PrivateRoute>},
     {path: "/doctor/patients", element: <PrivateRoute><DoctorPatientsView /></PrivateRoute>},
-    { path: "/audio-capture", element: <AudioCaptureView /> },
+    {path: "/audio-capture", element: <AudioCaptureView /> },
 ]);
-import PatientHistoryView from "./pages/PatientHistoryView";
-{
-  path: "/patient-history",
-  element: <PatientHistoryView />,
-}

@@ -85,9 +85,9 @@ export default function NavigationDrawer() {
 
   const patientLinks = [
     { id: 'p-dashboard', text: 'Dashboard', href: '/patient' },
-    { id: 'p-weekly', text: 'Weekly Report', href: '/weekly-report' },
-    { id: 'p-history', text: 'History', href: '/history' },
-    { id: 'p-appts', text: 'Appointments', href: '/my-appointments' },
+    { id: 'p-weekly', text: 'Weekly Report', href: '/patient/weekly-report' },
+    { id: 'p-history', text: 'History', href: '/patient/history' },
+    { id: 'p-appts', text: 'Appointments', href: '/patient/appointments' },
   ];
 
   const providerLinks = [

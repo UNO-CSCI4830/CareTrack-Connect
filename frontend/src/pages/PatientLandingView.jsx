@@ -53,7 +53,7 @@ const PatientView = () => {
                 <Box className="status-card" sx={{ display: "flex", gap: 2, flexWrap: "wrap", mt: 3 }}>
                     <Button
                         variant="contained"
-                        onClick={() => navigate("/check-in")}
+                        onClick={() => navigate("/patient/check-in")}
                         sx={{
                             backgroundColor: "#6366f1",
                             color: "white",
