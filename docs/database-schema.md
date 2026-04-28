@@ -21,6 +21,23 @@ CREATE TABLE public.alerts (
   CONSTRAINT alerts_check_in_id_fkey FOREIGN KEY (check_in_id) REFERENCES public.check_ins(id),
   CONSTRAINT alerts_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions(id)
 );
+CREATE TABLE public.appointments (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  provider_id uuid NOT NULL,
+  patient_id uuid NOT NULL,
+  start_at timestamp with time zone NOT NULL,
+  end_at timestamp with time zone NOT NULL,
+  status text NOT NULL DEFAULT 'scheduled'::text CHECK (status = ANY (ARRAY['scheduled'::text, 'cancelled'::text, 'completed'::text])),
+  reason text,
+  cancelled_at timestamp with time zone,
+  cancelled_by uuid,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT appointments_pkey PRIMARY KEY (id),
+  CONSTRAINT appointments_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id),
+  CONSTRAINT appointments_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES public.profiles(id),
+  CONSTRAINT appointments_cancelled_by_fkey FOREIGN KEY (cancelled_by) REFERENCES public.profiles(id)
+);
 CREATE TABLE public.attachments (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   patient_id uuid NOT NULL,
@@ -57,6 +74,21 @@ CREATE TABLE public.check_ins (
   CONSTRAINT check_ins_pkey PRIMARY KEY (id),
   CONSTRAINT check_ins_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES public.profiles(id)
 );
+CREATE TABLE public.notifications (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  recipient_id uuid NOT NULL,
+  sender_id uuid,
+  type text NOT NULL CHECK (type = ANY (ARRAY['appointment_booked'::text, 'appointment_cancelled'::text, 'appointment_rescheduled'::text])),
+  message text NOT NULL,
+  related_appointment_id uuid,
+  status text NOT NULL DEFAULT 'unread'::text CHECK (status = ANY (ARRAY['unread'::text, 'read'::text, 'dismissed'::text])),
+  read_at timestamp with time zone,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT notifications_pkey PRIMARY KEY (id),
+  CONSTRAINT notifications_recipient_id_fkey FOREIGN KEY (recipient_id) REFERENCES public.profiles(id),
+  CONSTRAINT notifications_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES public.profiles(id),
+  CONSTRAINT notifications_related_appointment_id_fkey FOREIGN KEY (related_appointment_id) REFERENCES public.appointments(id)
+);
 CREATE TABLE public.patient_details (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   profile_id uuid NOT NULL UNIQUE,
@@ -92,6 +124,26 @@ CREATE TABLE public.profiles (
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_auth_user_id_fkey FOREIGN KEY (auth_user_id) REFERENCES auth.users(id)
 );
+CREATE TABLE public.provider_availability (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  provider_id uuid NOT NULL,
+  day_of_week smallint NOT NULL CHECK (day_of_week >= 0 AND day_of_week <= 6),
+  start_time time without time zone NOT NULL,
+  end_time time without time zone NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT provider_availability_pkey PRIMARY KEY (id),
+  CONSTRAINT provider_availability_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.provider_availability_exceptions (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  provider_id uuid NOT NULL,
+  start_at timestamp with time zone NOT NULL,
+  end_at timestamp with time zone NOT NULL,
+  reason text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT provider_availability_exceptions_pkey PRIMARY KEY (id),
+  CONSTRAINT provider_availability_exceptions_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id)
+);
 CREATE TABLE public.provider_details (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   profile_id uuid NOT NULL UNIQUE,
@@ -102,9 +154,9 @@ CREATE TABLE public.provider_details (
   clinic_address text,
   npi_number text,
   accepting_patients boolean DEFAULT true,
-  timezone text NOT NULL DEFAULT 'America/Chicago',
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
   created_at timestamp with time zone NOT NULL DEFAULT now(),
+  timezone text NOT NULL DEFAULT 'America/Chicago'::text,
   CONSTRAINT provider_details_pkey PRIMARY KEY (id),
   CONSTRAINT provider_details_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
 );
@@ -131,47 +183,3 @@ CREATE TABLE public.questions (
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT questions_pkey PRIMARY KEY (id)
 );
-
-CREATE TABLE public.provider_availability (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  provider_id uuid NOT NULL,
-  day_of_week smallint NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
-  start_time time NOT NULL,
-  end_time time NOT NULL CHECK (end_time > start_time),
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT provider_availability_pkey PRIMARY KEY (id),
-  CONSTRAINT provider_availability_provider_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id),
-  CONSTRAINT provider_availability_unique_slot UNIQUE (provider_id, day_of_week, start_time)
-);
-CREATE TABLE public.provider_availability_exceptions (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  provider_id uuid NOT NULL,
-  start_at timestamp with time zone NOT NULL,
-  end_at timestamp with time zone NOT NULL CHECK (end_at > start_at),
-  reason text,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT provider_availability_exceptions_pkey PRIMARY KEY (id),
-  CONSTRAINT provider_availability_exceptions_provider_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id)
-);
-CREATE TABLE public.appointments (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  provider_id uuid NOT NULL,
-  patient_id uuid NOT NULL,
-  start_at timestamp with time zone NOT NULL,
-  end_at timestamp with time zone NOT NULL CHECK (end_at = start_at + interval '1 hour'),
-  status text NOT NULL DEFAULT 'scheduled'
-         CHECK (status IN ('scheduled','cancelled','completed')),
-  reason text,
-  cancelled_at timestamp with time zone,
-  cancelled_by uuid,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT appointments_pkey PRIMARY KEY (id),
-  CONSTRAINT appointments_provider_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id),
-  CONSTRAINT appointments_patient_fkey FOREIGN KEY (patient_id) REFERENCES public.profiles(id),
-  CONSTRAINT appointments_cancelled_by_fkey FOREIGN KEY (cancelled_by) REFERENCES public.profiles(id)
-);
--- Prevents double-booking at the DB level:
-CREATE UNIQUE INDEX appointments_unique_scheduled_slot
-  ON public.appointments (provider_id, start_at)
-  WHERE status = 'scheduled';
